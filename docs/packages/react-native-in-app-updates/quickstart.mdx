@@ -1,0 +1,22 @@
+# Quickstart
+
+```tsx
+import { useInAppUpdates } from '@rnforge/react-native-in-app-updates';
+
+function App() {
+  const { checkForUpdate } = useInAppUpdates();
+
+  const handleCheck = async () => {
+    const result = await checkForUpdate();
+    if (result.status === 'update_available') {
+      // An update is available via Google Play
+    }
+  };
+
+  return (
+    // ...
+  );
+}
+```
+
+See [Overview](./index) for full API details.

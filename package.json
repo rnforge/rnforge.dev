@@ -14,7 +14,9 @@
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
     "gen:api": "bun scripts/generate-api.ts",
-    "check:api": "bun run gen:api && git diff --exit-code docs/packages/react-native-in-app-updates/api-generated.md"
+    "check:api": "bun run gen:api && git diff --exit-code docs/packages/react-native-in-app-updates/api-generated.md",
+    "gen:llms": "bun scripts/generate-llms.ts",
+    "check:llms": "bun run gen:llms && git diff --exit-code static/llms.txt static/llms-full.txt"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.1",

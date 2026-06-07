@@ -1,33 +1,29 @@
 # RNForge Docs — Full LLM Context
 
-> Generated from rnforge.dev Docusaurus source. This file contains the complete documentation content as a single markdown file for LLM ingestion.
-
-## Site Overview
-
-RNForge provides native-layer wrapper packages for React Native. Forging the native layer for React Native.
-
-- URL: https://rnforge.dev
-- Framework: Docusaurus 3.10.1
+> Complete documentation content for LLM ingestion.
+> Generated from rnforge.dev source docs.
+> URL: https://rnforge.dev
+> Regenerate: `bun run gen:llms`
 
 ---
 
-## Docs Landing
+## RNForge Docs
 
 RNForge provides native-layer wrapper packages for React Native.
 
-### Packages
+## Packages
 
-- @rnforge/react-native-in-app-updates — Capability-first, cross-platform in-app update flows for Android (Play Core) with iOS store-page helpers. Supports immediate and flexible updates, install-state listeners, and typed unsupported-state handling.
+- [@rnforge/react-native-in-app-updates](https://rnforge.dev/docs/packages/react-native-in-app-updates) — Capability-first, cross-platform in-app update flows for Android (Play Core) with iOS store-page helpers. Supports immediate and flexible updates, install-state listeners, and typed unsupported-state handling.
 
 ---
 
-## Package: @rnforge/react-native-in-app-updates
+## @rnforge/react-native-in-app-updates
 
-A capability-first, cross-platform React Native API for in-app update flows. Built with Nitro for type-safe native bridging.
+A capability-first, cross-platform React Native API for in-app update flows. Built with [Nitro](https://nitro.margelo.com) for type-safe native bridging.
 
-On Android, the package integrates with Google Play Core in-app updates to provide immediate and flexible update flows. On iOS, the package reports Play-style flows as unsupported and provides store-page helpers instead of silently pretending updates can be installed in-app.
+On **Android**, the package integrates with Google Play Core in-app updates to provide immediate and flexible update flows. On **iOS**, the package reports Play-style flows as unsupported and provides store-page helpers instead of silently pretending updates can be installed in-app.
 
-### Support Matrix
+## Support Matrix
 
 | Platform | Real In-App Updates | Store Page | Install Listener |
 |---|---|---|---|
@@ -35,24 +31,40 @@ On Android, the package integrates with Google Play Core in-app updates to provi
 | Android (sideload / debug) | unsupported | yes (Play Store fallback) | no |
 | iOS | unsupported | yes (App Store) | unsupported event |
 
-### API Surface
+## API Surface
 
-Six main functions: getUpdateStatus, startImmediateUpdate, startFlexibleUpdate, completeFlexibleUpdate, addInstallStateListener, openStorePage.
+Six main functions plus helper predicates:
 
-Six helper predicates: isUpdateAvailable, canStartImmediateUpdate, canStartFlexibleUpdate, canCompleteFlexibleUpdate, canOpenStorePage, supportsInstallStateListener.
+| Function | Description |
+|---|---|
+| `getUpdateStatus(options?)` | Check update availability and platform capabilities |
+| `startImmediateUpdate(options?)` | Start an Android immediate (full-screen) update flow |
+| `startFlexibleUpdate(options?)` | Start an Android flexible (background) update flow |
+| `completeFlexibleUpdate()` | Complete a downloaded flexible update |
+| `addInstallStateListener(callback)` | Listen to Android download/install progress events |
+| `openStorePage(options?)` | Open the platform store page for the current app |
 
-### Capability-First Model
+Helper predicates: `isUpdateAvailable`, `canStartImmediateUpdate`, `canStartFlexibleUpdate`, `canCompleteFlexibleUpdate`, `canOpenStorePage`, `supportsInstallStateListener`.
 
-Update-status and update-flow APIs return typed UpdateStatus objects rather than throwing for expected unsupported or unavailable states. addInstallStateListener returns a subscription and emits InstallStateEvent objects. openStorePage returns Promise<void> and rejects only for invalid input or unexpected native failures.
+## Capability-First Model
 
-### Google Play Distribution Boundary
+Update-status and update-flow APIs (`getUpdateStatus`, `startImmediateUpdate`, `startFlexibleUpdate`, `completeFlexibleUpdate`) return typed `UpdateStatus` objects rather than throwing for expected unsupported or unavailable states. `addInstallStateListener` returns a subscription and emits `InstallStateEvent` objects. `openStorePage` returns `Promise<void>` and rejects only for invalid input or unexpected native failures.
 
-Real in-app update flows require all of:
-1. The app is installed from Google Play (not sideloaded, not debug builds from Android Studio)
+## Google Play Distribution Boundary
+
+Real in-app update flows require **all** of:
+
+1. The app is installed from **Google Play** (not sideloaded, not debug builds from Android Studio)
 2. Google Play Services are available and up to date
-3. The installed build is signed with the same certificate as the Play track build
+3. The installed build is signed with the **same certificate** as the Play track build
 
-When these requirements are not met, the package returns supported: false with a typed reason.
+When these requirements are not met, the package returns `supported: false` with a typed reason (`'unsupported-install-source'`, `'unsupported-os-version'`, `'apk-expansion-files-unsupported'`, or `'play-core-unavailable'`).
+
+## Sections
+
+- [Install](https://rnforge.dev/docs/packages/react-native-in-app-updates/install)
+- [Quickstart](https://rnforge.dev/docs/packages/react-native-in-app-updates/quickstart)
+- [API Reference](https://rnforge.dev/docs/packages/react-native-in-app-updates/api)
 
 ---
 
@@ -62,75 +74,1347 @@ When these requirements are not met, the package returns supported: false with a
 npm install @rnforge/react-native-in-app-updates react-native-nitro-modules
 ```
 
-### Requirements
-- React Native 0.75+
-- react-native-nitro-modules (peer dependency)
-- Android: compileSdkVersion 34+, NDK 27+, Google Play Services
-- iOS: Xcode 16.4+, Swift 5.9+
+## Requirements
 
-### Testing
+- React Native `0.75+`
+- `react-native-nitro-modules` (peer dependency)
+- **Android**: `compileSdkVersion 34+`, NDK `27+`, Google Play Services
+- **iOS**: Xcode `16.4+`, Swift `5.9+`
+
+## Platform Setup
+
+### Android
+
+No additional setup required beyond Google Play Services. The package uses Play Core to provide in-app update flows on Play-distributed builds.
+
+### iOS
+
+iOS does not support Google Play-style immediate or flexible in-app updates. The package provides explicit typed status for all APIs and an `openStorePage()` helper to direct users to the App Store.
+
+## Testing
+
 ```bash
-bun run typecheck    # TypeScript type checking (src + specs)
-bun run typecheck:example  # TypeScript type checking (example/)
-bunx jest            # Unit tests (Jest, mocked native layer)
-bun run build        # Build verification
+# TypeScript type checking (src + specs)
+bun run typecheck
+
+# TypeScript type checking (example/)
+bun run typecheck:example
+
+# Unit tests (Jest, mocked native layer)
+bunx jest
+
+# Build verification
+bun run build
 ```
+
+## Next
+
+- [Quickstart](https://rnforge.dev/docs/packages/react-native-in-app-updates/quickstart)
+- [Overview](https://rnforge.dev/docs/packages/react-native-in-app-updates)
+
+---
+
+## Quickstart
+
+## Basic Check
+
+```tsx
+import {
+  getUpdateStatus,
+  isUpdateAvailable,
+  canStartImmediateUpdate,
+  canStartFlexibleUpdate,
+  canOpenStorePage,
+} from '@rnforge/react-native-in-app-updates'
+
+async function checkForUpdates() {
+  const status = await getUpdateStatus({
+    ios: { appStoreId: '1234567890' },
+  })
+
+  if (!status.supported) {
+    console.log('Unsupported:', status.reason)
+    if (canOpenStorePage(status)) {
+      await openStorePage({ ios: { appStoreId: '1234567890' } })
+    }
+    return
+  }
+
+  if (!isUpdateAvailable(status)) {
+    console.log('No update available')
+    return
+  }
+
+  // Branch on the right flow
+  if (canStartImmediateUpdate(status)) {
+    const result = await startImmediateUpdate()
+    console.log(result.reason)
+  } else if (canStartFlexibleUpdate(status)) {
+    const result = await startFlexibleUpdate()
+    console.log(result.reason)
+  }
+}
+```
+
+## Flexible Update with Progress
+
+```tsx
+import {
+  getUpdateStatus,
+  startFlexibleUpdate,
+  completeFlexibleUpdate,
+  addInstallStateListener,
+  canCompleteFlexibleUpdate,
+} from '@rnforge/react-native-in-app-updates'
+
+async function performFlexibleUpdate() {
+  const status = await getUpdateStatus()
+
+  if (!status.supported || !status.updateAvailable) return
+
+  const result = await startFlexibleUpdate()
+  console.log('Flexible update started:', result.reason)
+
+  // Listen to download progress
+  const subscription = addInstallStateListener((event) => {
+    if (event.reason === 'download-progress') {
+      console.log(`Progress: ${(event.progress * 100).toFixed(0)}%`)
+    }
+    if (event.installStatus === 'downloaded') {
+      console.log('Update downloaded, ready to complete')
+    }
+  })
+
+  // Later, when download completes:
+  const completeStatus = await getUpdateStatus()
+  if (canCompleteFlexibleUpdate(completeStatus)) {
+    await completeFlexibleUpdate()
+    subscription.remove()
+  }
+}
+```
+
+## iOS: Open Store Page
+
+```tsx
+import { openStorePage } from '@rnforge/react-native-in-app-updates'
+
+// Opens App Store listing via URL scheme
+await openStorePage({
+  ios: {
+    appStoreId: '1234567890',
+    country: 'us', // optional two-letter country code
+  },
+})
+```
+
+## See Also
+
+- [Overview](https://rnforge.dev/docs/packages/react-native-in-app-updates)
+- [Install](https://rnforge.dev/docs/packages/react-native-in-app-updates/install)
 
 ---
 
 ## API Reference
 
-### Exported Functions
+## Exported Functions
 
-**getUpdateStatus(options?)**
-Check update availability and platform capabilities. Returns Promise<UpdateStatus>.
-Platform: Android + iOS. On Android, queries Play Core; on iOS, performs App Store lookup when appStoreId is provided.
+### `getUpdateStatus(options?)`
 
-**startImmediateUpdate(options?)**
-Starts an Android immediate update flow (full-screen Play Core dialog). Returns Promise<UpdateStatus>.
-Platform: Android only. iOS returns supported: false with reason: 'unsupported-platform'.
+Check update availability and platform capabilities. Returns `Promise<UpdateStatus>`.
 
-**startFlexibleUpdate(options?)**
-Starts an Android flexible (background) update flow. Returns Promise<UpdateStatus>.
-Platform: Android only. iOS returns supported: false with reason: 'unsupported-platform'.
+```ts
+import { getUpdateStatus } from '@rnforge/react-native-in-app-updates'
 
-**completeFlexibleUpdate()**
-Completes a downloaded flexible update. Returns Promise<UpdateStatus>.
-Platform: Android only.
+const status = await getUpdateStatus({
+  ios: { appStoreId: '1234567890', country: 'us' },
+  android: { allowAssetPackDeletion: false },
+})
+```
 
-**addInstallStateListener(callback)**
-Listen to Android flexible update download/install progress. Returns Subscription with remove().
-Platform: Android — events fire during lifecycle; iOS — fires single unsupported event, then noop.
+**Platform:** Android + iOS
 
-**openStorePage(options?)**
-Opens the platform store page for the current app. Returns Promise<void>.
-Android: No options required. iOS: Requires options.ios.appStoreId (digits-only).
+On **Android**, queries Play Core for update availability and returns `supported: true` when the app is Play-distributed. On **iOS**, performs an App Store lookup when `appStoreId` is provided; without it, returns `supported: false` with `reason: 'missing-app-store-id'`.
 
-### Helper Predicates
+#### Options
 
-- isUpdateAvailable(status) — true when updateAvailable === true
-- canStartImmediateUpdate(status) — true when supported, capabilities.immediate, updateAvailable, and allowed.immediate are all true
-- canStartFlexibleUpdate(status) — true when supported, capabilities.flexible, updateAvailable, and allowed.flexible are all true
-- canCompleteFlexibleUpdate(status) — true when supported, capabilities.flexible, and installStatus === 'downloaded'
-- canOpenStorePage(status) — true when capabilities.storePage === true
-- supportsInstallStateListener(status) — true when capabilities.installStateListener === true
+```ts
+type GetUpdateStatusOptions = {
+  ios?: { appStoreId?: string; country?: string }
+  android?: { allowAssetPackDeletion?: boolean }
+}
+```
 
-### Core Types
+---
 
-**UpdateStatus** — Returned by getUpdateStatus, startImmediateUpdate, startFlexibleUpdate, completeFlexibleUpdate.
-Fields: platform, supported, updateAvailable, capabilities, allowed, reason, currentVersion, currentBuild, latestStoreVersion, latestStoreBuild, installStatus, android, ios.
+### `startImmediateUpdate(options?)`
 
-**InstallStateEvent** — Emitted by addInstallStateListener.
-Fields: platform, supported, installStatus, reason, bytesDownloaded, totalBytesToDownload, progress, errorCode, message, android.
+Starts an Android immediate update flow. Presents a full-screen Play Core dialog blocking user interaction until accepted or declined. Returns `Promise<UpdateStatus>`.
 
-**InAppUpdatesError** — Thrown for invalid input or unexpected native failures. Extends Error with code and android fields.
+**Platform:** Android only. iOS returns `supported: false` with `reason: 'unsupported-platform'` (no exception).
 
-### Reason Enums
+```ts
+import { startImmediateUpdate } from '@rnforge/react-native-in-app-updates'
 
-AvailabilityReason: update-available, no-update-available, developer-triggered-update-in-progress, flexible-update-downloaded, update-not-allowed, context-unavailable, activity-unavailable, user-canceled, unknown.
+const result = await startImmediateUpdate({
+  android: { allowAssetPackDeletion: true },
+})
+```
 
-UnsupportedReason: unsupported-platform, unsupported-os-version, unsupported-install-source, apk-expansion-files-unsupported, missing-app-store-id, play-core-unavailable, store-lookup-unavailable, store-lookup-timeout, store-lookup-network-error, store-lookup-http-error, store-lookup-not-found, store-lookup-invalid-response.
+#### Options
 
-InstallStatus: unknown, pending, downloading, downloaded, installing, installed, failed, canceled, unsupported.
+```ts
+type StartImmediateUpdateOptions = {
+  android?: { allowAssetPackDeletion?: boolean }
+}
+```
 
-InAppUpdatesErrorCode: invalid-input, bridge-error, native-error, unexpected.
+---
+
+### `startFlexibleUpdate(options?)`
+
+Starts an Android flexible (background) update flow. Download proceeds in the background and can be tracked via `addInstallStateListener`. Returns `Promise<UpdateStatus>`.
+
+**Platform:** Android only. iOS returns `supported: false` with `reason: 'unsupported-platform'`.
+
+```ts
+import { startFlexibleUpdate } from '@rnforge/react-native-in-app-updates'
+
+const result = await startFlexibleUpdate()
+```
+
+#### Options
+
+```ts
+type StartFlexibleUpdateOptions = {
+  android?: { allowAssetPackDeletion?: boolean }
+}
+```
+
+---
+
+### `completeFlexibleUpdate()`
+
+Completes a downloaded flexible update. Call after `getUpdateStatus()` returns `installStatus: 'downloaded'` or after the install-state listener reports `installStatus: 'downloaded'`. Returns `Promise<UpdateStatus>`.
+
+If no downloaded flexible update is pending, returns `reason: 'update-not-allowed'`.
+
+**Platform:** Android only.
+
+```ts
+import { completeFlexibleUpdate } from '@rnforge/react-native-in-app-updates'
+
+const result = await completeFlexibleUpdate()
+```
+
+---
+
+### `addInstallStateListener(callback)`
+
+Listen to Android flexible update download/install progress. Returns a `Subscription` object with a `remove()` method.
+
+**Platform:** Android — events fire during the download/install lifecycle. iOS — fires a single event with `supported: false`, `reason: 'unsupported-platform'`, then becomes a noop subscription.
+
+```ts
+import { addInstallStateListener } from '@rnforge/react-native-in-app-updates'
+
+const subscription = addInstallStateListener((event) => {
+  console.log(event.installStatus)  // 'downloading' | 'downloaded' | 'failed' | ...
+  console.log(event.bytesDownloaded) // number
+  console.log(event.totalBytesToDownload) // number
+  console.log(event.progress)        // 0.0 - 1.0
+})
+
+// Remove listener when done
+subscription.remove()
+```
+
+#### Types
+
+```ts
+type InstallStateListener = (event: InstallStateEvent) => void
+
+type InstallStateSubscription = {
+  remove: () => void
+}
+```
+
+---
+
+### `openStorePage(options?)`
+
+Opens the platform store page for the current app. Returns `Promise<void>`.
+
+- **Android:** Opens `market://details?id=<packageName>` with browser fallback to Play Store. No options required.
+- **iOS:** Requires `options.ios.appStoreId` (digits-only numeric ID). Optional `country` (two-letter lowercase code). Throws `InAppUpdatesError('invalid-input')` if `appStoreId` is missing or invalid.
+
+```ts
+import { openStorePage } from '@rnforge/react-native-in-app-updates'
+
+// iOS
+await openStorePage({
+  ios: { appStoreId: '1234567890', country: 'us' },
+})
+
+// Android
+await openStorePage()
+```
+
+#### Options
+
+```ts
+type OpenStorePageOptions = {
+  ios?: { appStoreId: string; country?: string }
+}
+```
+
+---
+
+## Helper Predicates
+
+Pure functions that return `boolean`. Branched on `UpdateStatus` fields — no try/catch needed.
+
+```ts
+import {
+  isUpdateAvailable,
+  canStartImmediateUpdate,
+  canStartFlexibleUpdate,
+  canCompleteFlexibleUpdate,
+  canOpenStorePage,
+  supportsInstallStateListener,
+} from '@rnforge/react-native-in-app-updates'
+```
+
+| Helper | Returns `true` when |
+|---|---|
+| `isUpdateAvailable(status)` | `updateAvailable === true` |
+| `canStartImmediateUpdate(status)` | `supported`, `capabilities.immediate`, `updateAvailable`, and `allowed.immediate` are all `true` |
+| `canStartFlexibleUpdate(status)` | `supported`, `capabilities.flexible`, `updateAvailable`, and `allowed.flexible` are all `true` |
+| `canCompleteFlexibleUpdate(status)` | `supported`, `capabilities.flexible`, and `installStatus === 'downloaded'` |
+| `canOpenStorePage(status)` | `capabilities.storePage === true` (may be `true` even when `supported: false`) |
+| `supportsInstallStateListener(status)` | `capabilities.installStateListener === true` |
+
+---
+
+## Core Types
+
+### `UpdateStatus`
+
+Returned by `getUpdateStatus`, `startImmediateUpdate`, `startFlexibleUpdate`, and `completeFlexibleUpdate`.
+
+```ts
+type UpdateStatus = {
+  platform: 'android' | 'ios'
+  supported: boolean
+  updateAvailable: boolean | null
+  capabilities: Capabilities
+  allowed: AllowedFlows
+  reason: AvailabilityReason | UnsupportedReason
+  currentVersion?: string
+  currentBuild?: string | number
+  latestStoreVersion?: string
+  latestStoreBuild?: string | number
+  installStatus?: InstallStatus
+  android?: AndroidDetails
+  ios?: IosDetails
+}
+```
+
+### `InstallStateEvent`
+
+Emitted by `addInstallStateListener`.
+
+```ts
+type InstallStateEvent = {
+  platform: 'android' | 'ios'
+  supported: boolean
+  installStatus: InstallStatus
+  reason: InstallStateEventReason
+  bytesDownloaded?: number
+  totalBytesToDownload?: number
+  progress?: number
+  errorCode?: string
+  message?: string
+  android?: AndroidDetails
+}
+```
+
+### `InAppUpdatesError`
+
+Thrown for invalid input or unexpected native failures — not for expected unsupported states.
+
+```ts
+class InAppUpdatesError extends Error {
+  code: InAppUpdatesErrorCode // 'invalid-input' | 'bridge-error' | 'native-error' | 'unexpected'
+  android?: AndroidDetails
+}
+```
+
+---
+
+## Supporting Types
+
+### `Capabilities`
+
+```ts
+type Capabilities = {
+  immediate: boolean
+  flexible: boolean
+  storePage: boolean
+  latestVersionLookup: boolean
+  installStateListener: boolean
+}
+```
+
+### `AllowedFlows`
+
+```ts
+type AllowedFlows = {
+  immediate: boolean
+  flexible: boolean
+}
+```
+
+### `AndroidDetails`
+
+```ts
+type AndroidDetails = {
+  packageName?: string
+  playCore?: PlayCoreDetails
+}
+```
+
+### `IosDetails`
+
+```ts
+type IosDetails = {
+  bundleIdentifier?: string
+  appStoreId?: string
+  storeUrl?: string
+  appStore?: IosAppStoreDetails
+}
+```
+
+### `PlayCoreDetails`
+
+Raw Play Core diagnostic fields. Only populated for Android.
+
+```ts
+type PlayCoreDetails = {
+  immediateFailedPreconditions?: string[]
+  flexibleFailedPreconditions?: string[]
+  installErrorCode?: number
+  taskErrorCode?: number
+  updateAvailability?: string
+  installStatus?: string
+  updatePriority?: number
+  clientVersionStalenessDays?: number
+  availableVersionCode?: number
+  bytesDownloaded?: number
+  totalBytesToDownload?: number
+  immediateAllowed?: boolean
+  flexibleAllowed?: boolean
+}
+```
+
+### `IosAppStoreDetails`
+
+Populated on successful App Store lookups.
+
+```ts
+type IosAppStoreDetails = {
+  version?: string
+  trackViewUrl?: string
+  trackName?: string
+  releaseNotes?: string
+  description?: string
+  minimumOsVersion?: string
+  averageUserRating?: number
+  userRatingCount?: number
+  artworkUrl60?: string
+  artworkUrl100?: string
+  artworkUrl512?: string
+}
+```
+
+---
+
+## Reason Enums
+
+### `AvailabilityReason`
+
+`'update-available'` | `'no-update-available'` | `'developer-triggered-update-in-progress'` | `'flexible-update-downloaded'` | `'update-not-allowed'` | `'context-unavailable'` | `'activity-unavailable'` | `'user-canceled'` | `'unknown'`
+
+### `UnsupportedReason`
+
+`'unsupported-platform'` | `'unsupported-os-version'` | `'unsupported-install-source'` | `'apk-expansion-files-unsupported'` | `'missing-app-store-id'` | `'play-core-unavailable'` | `'store-lookup-unavailable'` | `'store-lookup-timeout'` | `'store-lookup-network-error'` | `'store-lookup-http-error'` | `'store-lookup-not-found'` | `'store-lookup-invalid-response'`
+
+### `InstallStatus`
+
+`'unknown'` | `'pending'` | `'downloading'` | `'downloaded'` | `'installing'` | `'installed'` | `'failed'` | `'canceled'` | `'unsupported'`
+
+### `InstallStateEventReason`
+
+`UnsupportedReason` | `'download-progress'` | `'install-state-changed'` | `'flexible-update-downloaded'` | `'unknown'`
+
+### `InAppUpdatesErrorCode`
+
+`'invalid-input'` | `'bridge-error'` | `'native-error'` | `'unexpected'`
+
+---
+
+For an exhaustive type-canonical reference with full property tables, see the auto-generated [API Reference (Generated)](https://rnforge.dev/docs/packages/react-native-in-app-updates/api-generated). It is regenerated from the package source via `bun run gen:api`. The page above is the readable primary reference with platform notes and examples.
+
+---
+
+## API Reference (Generated)
+
+**@rnforge/react-native-in-app-updates**
+
+***
+
+
+## Classes
+
+### InAppUpdatesError
+
+Defined in: [react-native-in-app-updates/src/types.ts:163](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L163)
+
+#### Extends
+
+- `Error`
+
+#### Constructors
+
+##### Constructor
+
+```ts
+new InAppUpdatesError(
+   message,
+   code,
+   android?): InAppUpdatesError;
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:167](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L167)
+
+###### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `message` | `string` |
+| `code` | [`InAppUpdatesErrorCode`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#inappupdateserrorcode) |
+| `android?` | [`AndroidDetails`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#androiddetails) |
+
+###### Returns
+
+[`InAppUpdatesError`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#inappupdateserror)
+
+###### Overrides
+
+```ts
+Error.constructor
+```
+
+#### Properties
+
+| Property | Modifier | Type | Inherited from | Defined in |
+| ------ | ------ | ------ | ------ | ------ |
+| <a id="code"></a> `code` | `readonly` | [`InAppUpdatesErrorCode`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#inappupdateserrorcode) | - | [react-native-in-app-updates/src/types.ts:164](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L164) |
+| <a id="android-5"></a> `android?` | `readonly` | [`AndroidDetails`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#androiddetails) | - | [react-native-in-app-updates/src/types.ts:165](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L165) |
+| <a id="cause"></a> `cause?` | `public` | `unknown` | `Error.cause` | rnforge.dev/node\_modules/typescript/lib/lib.es2022.error.d.ts:24 |
+| <a id="name"></a> `name` | `public` | `string` | `Error.name` | rnforge.dev/node\_modules/typescript/lib/lib.es5.d.ts:1074 |
+| <a id="message-1"></a> `message` | `public` | `string` | `Error.message` | rnforge.dev/node\_modules/typescript/lib/lib.es5.d.ts:1075 |
+| <a id="stack"></a> `stack?` | `public` | `string` | `Error.stack` | rnforge.dev/node\_modules/typescript/lib/lib.es5.d.ts:1076 |
+
+#### Methods
+
+##### isError()
+
+```ts
+static isError(error): error is Error;
+```
+
+Defined in: rnforge.dev/node\_modules/typescript/lib/lib.esnext.error.d.ts:21
+
+Indicates whether the argument provided is a built-in Error instance or not.
+
+###### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `error` | `unknown` |
+
+###### Returns
+
+`error is Error`
+
+###### Inherited from
+
+```ts
+Error.isError
+```
+
+## Type Aliases
+
+### InstallStateListener
+
+```ts
+type InstallStateListener = (event) => void;
+```
+
+Defined in: [react-native-in-app-updates/src/addInstallStateListener.ts:4](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/addInstallStateListener.ts#L4)
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `event` | [`InstallStateEvent`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#installstateevent) |
+
+#### Returns
+
+`void`
+
+***
+
+### InstallStateSubscription
+
+```ts
+type InstallStateSubscription = {
+  remove: () => void;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/addInstallStateListener.ts:6](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/addInstallStateListener.ts#L6)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="remove"></a> `remove` | () => `void` | [react-native-in-app-updates/src/addInstallStateListener.ts:7](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/addInstallStateListener.ts#L7) |
+
+***
+
+### Platform
+
+```ts
+type Platform = "android" | "ios";
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:1](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L1)
+
+***
+
+### UnsupportedReason
+
+```ts
+type UnsupportedReason =
+  | "unsupported-platform"
+  | "unsupported-os-version"
+  | "unsupported-install-source"
+  | "apk-expansion-files-unsupported"
+  | "missing-app-store-id"
+  | "play-core-unavailable"
+  | "store-lookup-unavailable"
+  | "store-lookup-timeout"
+  | "store-lookup-network-error"
+  | "store-lookup-http-error"
+  | "store-lookup-not-found"
+  | "store-lookup-invalid-response";
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:3](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L3)
+
+***
+
+### AvailabilityReason
+
+```ts
+type AvailabilityReason =
+  | "update-available"
+  | "no-update-available"
+  | "developer-triggered-update-in-progress"
+  | "flexible-update-downloaded"
+  | "update-not-allowed"
+  | "context-unavailable"
+  | "activity-unavailable"
+  | "user-canceled"
+  | "unknown";
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:17](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L17)
+
+***
+
+### InstallStatus
+
+```ts
+type InstallStatus =
+  | "unknown"
+  | "pending"
+  | "downloading"
+  | "downloaded"
+  | "installing"
+  | "installed"
+  | "failed"
+  | "canceled"
+  | "unsupported";
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:28](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L28)
+
+***
+
+### InstallStateEventReason
+
+```ts
+type InstallStateEventReason =
+  | UnsupportedReason
+  | "download-progress"
+  | "install-state-changed"
+  | "flexible-update-downloaded"
+  | "unknown";
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:39](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L39)
+
+***
+
+### Capabilities
+
+```ts
+type Capabilities = {
+  immediate: boolean;
+  flexible: boolean;
+  storePage: boolean;
+  latestVersionLookup: boolean;
+  installStateListener: boolean;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:46](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L46)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="immediate"></a> `immediate` | `boolean` | [react-native-in-app-updates/src/types.ts:47](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L47) |
+| <a id="flexible"></a> `flexible` | `boolean` | [react-native-in-app-updates/src/types.ts:48](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L48) |
+| <a id="storepage"></a> `storePage` | `boolean` | [react-native-in-app-updates/src/types.ts:49](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L49) |
+| <a id="latestversionlookup"></a> `latestVersionLookup` | `boolean` | [react-native-in-app-updates/src/types.ts:50](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L50) |
+| <a id="installstatelistener-1"></a> `installStateListener` | `boolean` | [react-native-in-app-updates/src/types.ts:51](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L51) |
+
+***
+
+### AllowedFlows
+
+```ts
+type AllowedFlows = {
+  immediate: boolean;
+  flexible: boolean;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:54](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L54)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="immediate-1"></a> `immediate` | `boolean` | [react-native-in-app-updates/src/types.ts:55](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L55) |
+| <a id="flexible-1"></a> `flexible` | `boolean` | [react-native-in-app-updates/src/types.ts:56](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L56) |
+
+***
+
+### PlayCoreDetails
+
+```ts
+type PlayCoreDetails = {
+  immediateFailedPreconditions?: string[];
+  flexibleFailedPreconditions?: string[];
+  installErrorCode?: number;
+  taskErrorCode?: number;
+  updateAvailability?: string;
+  installStatus?: string;
+  updatePriority?: number;
+  clientVersionStalenessDays?: number;
+  availableVersionCode?: number;
+  bytesDownloaded?: number;
+  totalBytesToDownload?: number;
+  immediateAllowed?: boolean;
+  flexibleAllowed?: boolean;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:59](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L59)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="immediatefailedpreconditions"></a> `immediateFailedPreconditions?` | `string`[] | [react-native-in-app-updates/src/types.ts:60](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L60) |
+| <a id="flexiblefailedpreconditions"></a> `flexibleFailedPreconditions?` | `string`[] | [react-native-in-app-updates/src/types.ts:61](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L61) |
+| <a id="installerrorcode"></a> `installErrorCode?` | `number` | [react-native-in-app-updates/src/types.ts:62](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L62) |
+| <a id="taskerrorcode"></a> `taskErrorCode?` | `number` | [react-native-in-app-updates/src/types.ts:63](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L63) |
+| <a id="updateavailability"></a> `updateAvailability?` | `string` | [react-native-in-app-updates/src/types.ts:64](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L64) |
+| <a id="installstatus-1"></a> `installStatus?` | `string` | [react-native-in-app-updates/src/types.ts:65](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L65) |
+| <a id="updatepriority"></a> `updatePriority?` | `number` | [react-native-in-app-updates/src/types.ts:66](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L66) |
+| <a id="clientversionstalenessdays"></a> `clientVersionStalenessDays?` | `number` | [react-native-in-app-updates/src/types.ts:67](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L67) |
+| <a id="availableversioncode"></a> `availableVersionCode?` | `number` | [react-native-in-app-updates/src/types.ts:68](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L68) |
+| <a id="bytesdownloaded"></a> `bytesDownloaded?` | `number` | [react-native-in-app-updates/src/types.ts:69](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L69) |
+| <a id="totalbytestodownload"></a> `totalBytesToDownload?` | `number` | [react-native-in-app-updates/src/types.ts:70](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L70) |
+| <a id="immediateallowed"></a> `immediateAllowed?` | `boolean` | [react-native-in-app-updates/src/types.ts:71](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L71) |
+| <a id="flexibleallowed"></a> `flexibleAllowed?` | `boolean` | [react-native-in-app-updates/src/types.ts:72](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L72) |
+
+***
+
+### AndroidDetails
+
+```ts
+type AndroidDetails = {
+  packageName?: string;
+  playCore?: PlayCoreDetails;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:75](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L75)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="packagename"></a> `packageName?` | `string` | [react-native-in-app-updates/src/types.ts:76](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L76) |
+| <a id="playcore"></a> `playCore?` | [`PlayCoreDetails`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#playcoredetails) | [react-native-in-app-updates/src/types.ts:77](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L77) |
+
+***
+
+### IosAppStoreDetails
+
+```ts
+type IosAppStoreDetails = {
+  version?: string;
+  trackViewUrl?: string;
+  trackName?: string;
+  releaseNotes?: string;
+  description?: string;
+  minimumOsVersion?: string;
+  averageUserRating?: number;
+  userRatingCount?: number;
+  artworkUrl60?: string;
+  artworkUrl100?: string;
+  artworkUrl512?: string;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:80](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L80)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="version"></a> `version?` | `string` | [react-native-in-app-updates/src/types.ts:81](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L81) |
+| <a id="trackviewurl"></a> `trackViewUrl?` | `string` | [react-native-in-app-updates/src/types.ts:82](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L82) |
+| <a id="trackname"></a> `trackName?` | `string` | [react-native-in-app-updates/src/types.ts:83](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L83) |
+| <a id="releasenotes"></a> `releaseNotes?` | `string` | [react-native-in-app-updates/src/types.ts:84](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L84) |
+| <a id="description"></a> `description?` | `string` | [react-native-in-app-updates/src/types.ts:85](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L85) |
+| <a id="minimumosversion"></a> `minimumOsVersion?` | `string` | [react-native-in-app-updates/src/types.ts:86](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L86) |
+| <a id="averageuserrating"></a> `averageUserRating?` | `number` | [react-native-in-app-updates/src/types.ts:87](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L87) |
+| <a id="userratingcount"></a> `userRatingCount?` | `number` | [react-native-in-app-updates/src/types.ts:88](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L88) |
+| <a id="artworkurl60"></a> `artworkUrl60?` | `string` | [react-native-in-app-updates/src/types.ts:89](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L89) |
+| <a id="artworkurl100"></a> `artworkUrl100?` | `string` | [react-native-in-app-updates/src/types.ts:90](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L90) |
+| <a id="artworkurl512"></a> `artworkUrl512?` | `string` | [react-native-in-app-updates/src/types.ts:91](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L91) |
+
+***
+
+### IosDetails
+
+```ts
+type IosDetails = {
+  bundleIdentifier?: string;
+  appStoreId?: string;
+  storeUrl?: string;
+  appStore?: IosAppStoreDetails;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:94](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L94)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="bundleidentifier"></a> `bundleIdentifier?` | `string` | [react-native-in-app-updates/src/types.ts:95](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L95) |
+| <a id="appstoreid"></a> `appStoreId?` | `string` | [react-native-in-app-updates/src/types.ts:96](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L96) |
+| <a id="storeurl"></a> `storeUrl?` | `string` | [react-native-in-app-updates/src/types.ts:97](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L97) |
+| <a id="appstore"></a> `appStore?` | [`IosAppStoreDetails`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#iosappstoredetails) | [react-native-in-app-updates/src/types.ts:98](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L98) |
+
+***
+
+### UpdateStatus
+
+```ts
+type UpdateStatus = {
+  platform: Platform;
+  supported: boolean;
+  updateAvailable: boolean | null;
+  capabilities: Capabilities;
+  allowed: AllowedFlows;
+  reason:   | AvailabilityReason
+     | UnsupportedReason;
+  currentVersion?: string;
+  currentBuild?: string | number;
+  latestStoreVersion?: string;
+  latestStoreBuild?: string | number;
+  installStatus?: InstallStatus;
+  android?: AndroidDetails;
+  ios?: IosDetails;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:101](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L101)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="platform-1"></a> `platform` | [`Platform`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#platform) | [react-native-in-app-updates/src/types.ts:102](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L102) |
+| <a id="supported"></a> `supported` | `boolean` | [react-native-in-app-updates/src/types.ts:103](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L103) |
+| <a id="updateavailable"></a> `updateAvailable` | `boolean` \| `null` | [react-native-in-app-updates/src/types.ts:104](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L104) |
+| <a id="capabilities-1"></a> `capabilities` | [`Capabilities`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#capabilities) | [react-native-in-app-updates/src/types.ts:105](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L105) |
+| <a id="allowed"></a> `allowed` | [`AllowedFlows`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#allowedflows) | [react-native-in-app-updates/src/types.ts:106](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L106) |
+| <a id="reason"></a> `reason` | \| [`AvailabilityReason`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#availabilityreason) \| [`UnsupportedReason`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#unsupportedreason) | [react-native-in-app-updates/src/types.ts:107](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L107) |
+| <a id="currentversion"></a> `currentVersion?` | `string` | [react-native-in-app-updates/src/types.ts:108](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L108) |
+| <a id="currentbuild"></a> `currentBuild?` | `string` \| `number` | [react-native-in-app-updates/src/types.ts:109](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L109) |
+| <a id="lateststoreversion"></a> `latestStoreVersion?` | `string` | [react-native-in-app-updates/src/types.ts:110](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L110) |
+| <a id="lateststorebuild"></a> `latestStoreBuild?` | `string` \| `number` | [react-native-in-app-updates/src/types.ts:111](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L111) |
+| <a id="installstatus-2"></a> `installStatus?` | [`InstallStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#installstatus) | [react-native-in-app-updates/src/types.ts:112](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L112) |
+| <a id="android"></a> `android?` | [`AndroidDetails`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#androiddetails) | [react-native-in-app-updates/src/types.ts:113](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L113) |
+| <a id="ios"></a> `ios?` | [`IosDetails`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#iosdetails) | [react-native-in-app-updates/src/types.ts:114](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L114) |
+
+***
+
+### InstallStateEvent
+
+```ts
+type InstallStateEvent = {
+  platform: Platform;
+  supported: boolean;
+  installStatus: InstallStatus;
+  reason: InstallStateEventReason;
+  bytesDownloaded?: number;
+  totalBytesToDownload?: number;
+  progress?: number;
+  errorCode?: string;
+  message?: string;
+  android?: AndroidDetails;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:117](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L117)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="platform-2"></a> `platform` | [`Platform`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#platform) | [react-native-in-app-updates/src/types.ts:118](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L118) |
+| <a id="supported-1"></a> `supported` | `boolean` | [react-native-in-app-updates/src/types.ts:119](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L119) |
+| <a id="installstatus-3"></a> `installStatus` | [`InstallStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#installstatus) | [react-native-in-app-updates/src/types.ts:120](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L120) |
+| <a id="reason-1"></a> `reason` | [`InstallStateEventReason`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#installstateeventreason) | [react-native-in-app-updates/src/types.ts:121](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L121) |
+| <a id="bytesdownloaded-1"></a> `bytesDownloaded?` | `number` | [react-native-in-app-updates/src/types.ts:122](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L122) |
+| <a id="totalbytestodownload-1"></a> `totalBytesToDownload?` | `number` | [react-native-in-app-updates/src/types.ts:123](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L123) |
+| <a id="progress"></a> `progress?` | `number` | [react-native-in-app-updates/src/types.ts:124](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L124) |
+| <a id="errorcode"></a> `errorCode?` | `string` | [react-native-in-app-updates/src/types.ts:125](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L125) |
+| <a id="message"></a> `message?` | `string` | [react-native-in-app-updates/src/types.ts:126](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L126) |
+| <a id="android-1"></a> `android?` | [`AndroidDetails`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#androiddetails) | [react-native-in-app-updates/src/types.ts:127](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L127) |
+
+***
+
+### AndroidUpdateOptions
+
+```ts
+type AndroidUpdateOptions = {
+  allowAssetPackDeletion?: boolean;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:130](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L130)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="allowassetpackdeletion"></a> `allowAssetPackDeletion?` | `boolean` | [react-native-in-app-updates/src/types.ts:131](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L131) |
+
+***
+
+### GetUpdateStatusOptions
+
+```ts
+type GetUpdateStatusOptions = {
+  ios?: {
+     appStoreId?: string;
+     country?: string;
+  };
+  android?: AndroidUpdateOptions;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:134](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L134)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="ios-1"></a> `ios?` | \{ `appStoreId?`: `string`; `country?`: `string`; \} | [react-native-in-app-updates/src/types.ts:135](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L135) |
+| `ios.appStoreId?` | `string` | [react-native-in-app-updates/src/types.ts:136](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L136) |
+| `ios.country?` | `string` | [react-native-in-app-updates/src/types.ts:137](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L137) |
+| <a id="android-2"></a> `android?` | [`AndroidUpdateOptions`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#androidupdateoptions) | [react-native-in-app-updates/src/types.ts:139](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L139) |
+
+***
+
+### StartImmediateUpdateOptions
+
+```ts
+type StartImmediateUpdateOptions = {
+  android?: AndroidUpdateOptions;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:142](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L142)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="android-3"></a> `android?` | [`AndroidUpdateOptions`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#androidupdateoptions) | [react-native-in-app-updates/src/types.ts:143](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L143) |
+
+***
+
+### StartFlexibleUpdateOptions
+
+```ts
+type StartFlexibleUpdateOptions = {
+  android?: AndroidUpdateOptions;
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:146](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L146)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="android-4"></a> `android?` | [`AndroidUpdateOptions`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#androidupdateoptions) | [react-native-in-app-updates/src/types.ts:147](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L147) |
+
+***
+
+### OpenStorePageOptions
+
+```ts
+type OpenStorePageOptions = {
+  ios?: {
+     appStoreId: string;
+     country?: string;
+  };
+};
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:150](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L150)
+
+#### Properties
+
+| Property | Type | Defined in |
+| ------ | ------ | ------ |
+| <a id="ios-2"></a> `ios?` | \{ `appStoreId`: `string`; `country?`: `string`; \} | [react-native-in-app-updates/src/types.ts:151](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L151) |
+| `ios.appStoreId` | `string` | [react-native-in-app-updates/src/types.ts:152](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L152) |
+| `ios.country?` | `string` | [react-native-in-app-updates/src/types.ts:153](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L153) |
+
+***
+
+### InAppUpdatesErrorCode
+
+```ts
+type InAppUpdatesErrorCode = "invalid-input" | "bridge-error" | "native-error" | "unexpected";
+```
+
+Defined in: [react-native-in-app-updates/src/types.ts:157](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/types.ts#L157)
+
+## Functions
+
+### addInstallStateListener()
+
+```ts
+function addInstallStateListener(listener): InstallStateSubscription;
+```
+
+Defined in: [react-native-in-app-updates/src/addInstallStateListener.ts:10](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/addInstallStateListener.ts#L10)
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `listener` | [`InstallStateListener`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#installstatelistener) |
+
+#### Returns
+
+[`InstallStateSubscription`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#installstatesubscription)
+
+***
+
+### completeFlexibleUpdate()
+
+```ts
+function completeFlexibleUpdate(): Promise<UpdateStatus>;
+```
+
+Defined in: [react-native-in-app-updates/src/completeFlexibleUpdate.ts:6](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/completeFlexibleUpdate.ts#L6)
+
+#### Returns
+
+`Promise`\<[`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus)\>
+
+***
+
+### getUpdateStatus()
+
+```ts
+function getUpdateStatus(options?): Promise<UpdateStatus>;
+```
+
+Defined in: [react-native-in-app-updates/src/getUpdateStatus.ts:7](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/getUpdateStatus.ts#L7)
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `options?` | [`GetUpdateStatusOptions`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#getupdatestatusoptions) |
+
+#### Returns
+
+`Promise`\<[`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus)\>
+
+***
+
+### isUpdateAvailable()
+
+```ts
+function isUpdateAvailable(status): boolean;
+```
+
+Defined in: [react-native-in-app-updates/src/helpers.ts:6](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/helpers.ts#L6)
+
+Returns true if a newer version is available in the store.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `status` | [`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus) |
+
+#### Returns
+
+`boolean`
+
+***
+
+### canStartImmediateUpdate()
+
+```ts
+function canStartImmediateUpdate(status): boolean;
+```
+
+Defined in: [react-native-in-app-updates/src/helpers.ts:13](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/helpers.ts#L13)
+
+Returns true if an immediate update flow can be started right now.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `status` | [`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus) |
+
+#### Returns
+
+`boolean`
+
+***
+
+### canStartFlexibleUpdate()
+
+```ts
+function canStartFlexibleUpdate(status): boolean;
+```
+
+Defined in: [react-native-in-app-updates/src/helpers.ts:25](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/helpers.ts#L25)
+
+Returns true if a flexible update flow can be started right now.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `status` | [`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus) |
+
+#### Returns
+
+`boolean`
+
+***
+
+### canCompleteFlexibleUpdate()
+
+```ts
+function canCompleteFlexibleUpdate(status): boolean;
+```
+
+Defined in: [react-native-in-app-updates/src/helpers.ts:39](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/helpers.ts#L39)
+
+Returns true if a downloaded flexible update can be completed.
+
+This checks the downloaded install-state, not update availability.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `status` | [`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus) |
+
+#### Returns
+
+`boolean`
+
+***
+
+### canOpenStorePage()
+
+```ts
+function canOpenStorePage(status): boolean;
+```
+
+Defined in: [react-native-in-app-updates/src/helpers.ts:52](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/helpers.ts#L52)
+
+Returns true if the store page can be opened for this app.
+
+This may be true even when in-app updates are unsupported (e.g. iOS).
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `status` | [`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus) |
+
+#### Returns
+
+`boolean`
+
+***
+
+### supportsInstallStateListener()
+
+```ts
+function supportsInstallStateListener(status): boolean;
+```
+
+Defined in: [react-native-in-app-updates/src/helpers.ts:59](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/helpers.ts#L59)
+
+Returns true if the platform supports install-state listeners.
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `status` | [`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus) |
+
+#### Returns
+
+`boolean`
+
+***
+
+### openStorePage()
+
+```ts
+function openStorePage(options?): Promise<void>;
+```
+
+Defined in: [react-native-in-app-updates/src/openStorePage.ts:21](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/openStorePage.ts#L21)
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `options?` | [`OpenStorePageOptions`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#openstorepageoptions) |
+
+#### Returns
+
+`Promise`\<`void`\>
+
+***
+
+### startFlexibleUpdate()
+
+```ts
+function startFlexibleUpdate(options?): Promise<UpdateStatus>;
+```
+
+Defined in: [react-native-in-app-updates/src/startFlexibleUpdate.ts:7](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/startFlexibleUpdate.ts#L7)
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `options?` | [`StartFlexibleUpdateOptions`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#startflexibleupdateoptions) |
+
+#### Returns
+
+`Promise`\<[`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus)\>
+
+***
+
+### startImmediateUpdate()
+
+```ts
+function startImmediateUpdate(options?): Promise<UpdateStatus>;
+```
+
+Defined in: [react-native-in-app-updates/src/startImmediateUpdate.ts:7](https://github.com/rnforge/react-native-in-app-updates/blob/b1e1fc194b5d29061d50116c1596dcfc6681ce69/src/startImmediateUpdate.ts#L7)
+
+#### Parameters
+
+| Parameter | Type |
+| ------ | ------ |
+| `options?` | [`StartImmediateUpdateOptions`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#startimmediateupdateoptions) |
+
+#### Returns
+
+`Promise`\<[`UpdateStatus`](https://rnforge.dev/docs/packages/react-native-in-app-updates/#updatestatus)\>
+
+---
+
+## @rnforge/react-native-in-app-updates v1.0.0
+
+First stable release of `@rnforge/react-native-in-app-updates`. This package provides a capability-first, cross-platform React Native API for in-app update flows, built with [Nitro](https://nitro.margelo.com).
+
+## Features
+
+- **Android immediate updates** — Full-screen Play Core dialog that blocks the user until accepted or declined
+- **Android flexible updates** — Background download with progress listener and deferred completion
+- **iOS App Store lookup** — Version comparison with typed `store-lookup-*` reasons for failure classification
+- **Store page helper** — Cross-platform `openStorePage()` using native URL schemes
+- **Capability-first model** — Typed `UpdateStatus` objects for expected states, exceptions only for invalid input or unexpected native failures
+- **Helper predicates** — `isUpdateAvailable`, `canStartImmediateUpdate`, `canStartFlexibleUpdate`, etc.
+- **Android unsupported-state reasons** — `unsupported-install-source`, `unsupported-os-version`, `apk-expansion-files-unsupported`, `play-core-unavailable`
+- **Asset pack deletion opt-in** — Optional `android.allowAssetPackDeletion` flag for Play Asset Delivery apps
+- **Activity-aware update UI** — `activity-unavailable` reason when no foreground Activity can host the Play UI
+- **Play Core diagnostics** — Raw Play Core details nested under `android.playCore` for diagnostic inspection
+
+## Install
+
+```bash
+npm install @rnforge/react-native-in-app-updates react-native-nitro-modules
+```
+
+See the [docs](https://rnforge.dev/docs/packages/react-native-in-app-updates) for full API reference.
+
+---
+
+*End of RNForge LLM context.*

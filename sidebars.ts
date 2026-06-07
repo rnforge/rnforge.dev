@@ -23,6 +23,7 @@ const sidebars: SidebarsConfig = {
             'packages/react-native-in-app-updates/install',
             'packages/react-native-in-app-updates/quickstart',
             'packages/react-native-in-app-updates/api',
+            'packages/react-native-in-app-updates/api-generated',
           ],
         },
       ],

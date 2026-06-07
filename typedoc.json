@@ -1,0 +1,33 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "../react-native-in-app-updates/src/index.ts"
+  ],
+  "entryPointStrategy": "expand",
+  "tsconfig": "./tsconfig.typedoc.json",
+  "plugin": ["typedoc-plugin-markdown"],
+  "outputFileStrategy": "modules",
+  "exclude": [
+    "**/__tests__/**",
+    "**/__mocks__/**",
+    "**/specs/**"
+  ],
+  "readme": "none",
+  "cleanOutputDir": true,
+  "sort": ["source-order"],
+  "kindSortOrder": [
+    "Function",
+    "TypeAlias",
+    "Class",
+    "Interface",
+    "Variable",
+    "Enum"
+  ],
+  "parametersFormat": "table",
+  "enumMembersFormat": "table",
+  "propertiesFormat": "table",
+  "typeDeclarationFormat": "table",
+  "indexFormat": "table",
+  "useCodeBlocks": true,
+  "expandObjects": true
+}

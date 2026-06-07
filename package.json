@@ -7,7 +7,7 @@
     "start": "docusaurus start",
     "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
-    "deploy": "docusaurus deploy",
+    "deploy": "bun run build && wrangler deploy",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
     "write-translations": "docusaurus write-translations",
@@ -16,7 +16,8 @@
     "gen:api": "bun scripts/generate-api.ts",
     "check:api": "bun run gen:api && git diff --exit-code docs/packages/react-native-in-app-updates/api-generated.md",
     "gen:llms": "bun scripts/generate-llms.ts",
-    "check:llms": "bun run gen:llms && git diff --exit-code static/llms.txt static/llms-full.txt"
+    "check:llms": "bun run gen:llms && git diff --exit-code static/llms.txt static/llms-full.txt",
+    "preview": "bun run build && wrangler dev"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.1",
@@ -36,7 +37,8 @@
     "@types/react": "^19.0.0",
     "typedoc": "^0.28.19",
     "typedoc-plugin-markdown": "^4.12.0",
-    "typescript": "~6.0.2"
+    "typescript": "~6.0.2",
+    "wrangler": "^4.98.0"
   },
   "browserslist": {
     "production": [

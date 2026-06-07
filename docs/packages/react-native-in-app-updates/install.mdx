@@ -1,11 +1,43 @@
 # Install
 
 ```bash npm2yarn
-npm install @rnforge/react-native-in-app-updates
+npm install @rnforge/react-native-in-app-updates react-native-nitro-modules
 ```
 
 ## Requirements
 
-- React Native 0.76+
-- Android: Google Play Store distribution with Play Core
-- iOS: No additional requirements (update flows report as unsupported)
+- React Native `0.75+`
+- `react-native-nitro-modules` (peer dependency)
+- **Android**: `compileSdkVersion 34+`, NDK `27+`, Google Play Services
+- **iOS**: Xcode `16.4+`, Swift `5.9+`
+
+## Platform Setup
+
+### Android
+
+No additional setup required beyond Google Play Services. The package uses Play Core to provide in-app update flows on Play-distributed builds.
+
+### iOS
+
+iOS does not support Google Play-style immediate or flexible in-app updates. The package provides explicit typed status for all APIs and an `openStorePage()` helper to direct users to the App Store.
+
+## Testing
+
+```bash
+# TypeScript type checking (src + specs)
+bun run typecheck
+
+# TypeScript type checking (example/)
+bun run typecheck:example
+
+# Unit tests (Jest, mocked native layer)
+bunx jest
+
+# Build verification
+bun run build
+```
+
+## Next
+
+- [Quickstart](./quickstart)
+- [Overview](../react-native-in-app-updates)

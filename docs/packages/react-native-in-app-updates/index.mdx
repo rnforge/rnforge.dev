@@ -1,8 +1,48 @@
 # @rnforge/react-native-in-app-updates
 
-In-app update flows for React Native. Supports Android immediate and flexible updates via Google Play Core. iOS reports Play-style update flows as unsupported.
+A capability-first, cross-platform React Native API for in-app update flows. Built with [Nitro](https://nitro.margelo.com) for type-safe native bridging.
+
+On **Android**, the package integrates with Google Play Core in-app updates to provide immediate and flexible update flows. On **iOS**, the package reports Play-style flows as unsupported and provides store-page helpers instead of silently pretending updates can be installed in-app.
+
+## Support Matrix
+
+| Platform | Real In-App Updates | Store Page | Install Listener |
+|---|---|---|---|
+| Android (Google Play) | immediate + flexible | yes | yes |
+| Android (sideload / debug) | unsupported | yes (Play Store fallback) | no |
+| iOS | unsupported | yes (App Store) | unsupported event |
+
+## API Surface
+
+Six main functions plus helper predicates:
+
+| Function | Description |
+|---|---|
+| `getUpdateStatus(options?)` | Check update availability and platform capabilities |
+| `startImmediateUpdate(options?)` | Start an Android immediate (full-screen) update flow |
+| `startFlexibleUpdate(options?)` | Start an Android flexible (background) update flow |
+| `completeFlexibleUpdate()` | Complete a downloaded flexible update |
+| `addInstallStateListener(callback)` | Listen to Android download/install progress events |
+| `openStorePage(options?)` | Open the platform store page for the current app |
+
+Helper predicates: `isUpdateAvailable`, `canStartImmediateUpdate`, `canStartFlexibleUpdate`, `canCompleteFlexibleUpdate`, `canOpenStorePage`, `supportsInstallStateListener`.
+
+## Capability-First Model
+
+Update-status and update-flow APIs (`getUpdateStatus`, `startImmediateUpdate`, `startFlexibleUpdate`, `completeFlexibleUpdate`) return typed `UpdateStatus` objects rather than throwing for expected unsupported or unavailable states. `addInstallStateListener` returns a subscription and emits `InstallStateEvent` objects. `openStorePage` returns `Promise<void>` and rejects only for invalid input or unexpected native failures.
+
+## Google Play Distribution Boundary
+
+Real in-app update flows require **all** of:
+
+1. The app is installed from **Google Play** (not sideloaded, not debug builds from Android Studio)
+2. Google Play Services are available and up to date
+3. The installed build is signed with the **same certificate** as the Play track build
+
+When these requirements are not met, the package returns `supported: false` with a typed reason (`'unsupported-install-source'`, `'unsupported-os-version'`, `'apk-expansion-files-unsupported'`, or `'play-core-unavailable'`).
 
 ## Sections
 
 - [Install](./install)
 - [Quickstart](./quickstart)
+- [API Reference](./api)

@@ -1,22 +1,98 @@
 # Quickstart
 
+## Basic Check
+
 ```tsx
-import { useInAppUpdates } from '@rnforge/react-native-in-app-updates';
+import {
+  getUpdateStatus,
+  isUpdateAvailable,
+  canStartImmediateUpdate,
+  canStartFlexibleUpdate,
+  canOpenStorePage,
+} from '@rnforge/react-native-in-app-updates'
 
-function App() {
-  const { checkForUpdate } = useInAppUpdates();
+async function checkForUpdates() {
+  const status = await getUpdateStatus({
+    ios: { appStoreId: '1234567890' },
+  })
 
-  const handleCheck = async () => {
-    const result = await checkForUpdate();
-    if (result.status === 'update_available') {
-      // An update is available via Google Play
+  if (!status.supported) {
+    console.log('Unsupported:', status.reason)
+    if (canOpenStorePage(status)) {
+      await openStorePage({ ios: { appStoreId: '1234567890' } })
     }
-  };
+    return
+  }
 
-  return (
-    // ...
-  );
+  if (!isUpdateAvailable(status)) {
+    console.log('No update available')
+    return
+  }
+
+  // Branch on the right flow
+  if (canStartImmediateUpdate(status)) {
+    const result = await startImmediateUpdate()
+    console.log(result.reason)
+  } else if (canStartFlexibleUpdate(status)) {
+    const result = await startFlexibleUpdate()
+    console.log(result.reason)
+  }
 }
 ```
 
-See [Overview](./index) for full API details.
+## Flexible Update with Progress
+
+```tsx
+import {
+  getUpdateStatus,
+  startFlexibleUpdate,
+  completeFlexibleUpdate,
+  addInstallStateListener,
+  canCompleteFlexibleUpdate,
+} from '@rnforge/react-native-in-app-updates'
+
+async function performFlexibleUpdate() {
+  const status = await getUpdateStatus()
+
+  if (!status.supported || !status.updateAvailable) return
+
+  const result = await startFlexibleUpdate()
+  console.log('Flexible update started:', result.reason)
+
+  // Listen to download progress
+  const subscription = addInstallStateListener((event) => {
+    if (event.reason === 'download-progress') {
+      console.log(`Progress: ${(event.progress * 100).toFixed(0)}%`)
+    }
+    if (event.installStatus === 'downloaded') {
+      console.log('Update downloaded, ready to complete')
+    }
+  })
+
+  // Later, when download completes:
+  const completeStatus = await getUpdateStatus()
+  if (canCompleteFlexibleUpdate(completeStatus)) {
+    await completeFlexibleUpdate()
+    subscription.remove()
+  }
+}
+```
+
+## iOS: Open Store Page
+
+```tsx
+import { openStorePage } from '@rnforge/react-native-in-app-updates'
+
+// Opens App Store listing via URL scheme
+await openStorePage({
+  ios: {
+    appStoreId: '1234567890',
+    country: 'us', // optional two-letter country code
+  },
+})
+```
+
+## See Also
+
+- [Overview](/docs/packages/react-native-in-app-updates)
+- [Install](/docs/packages/react-native-in-app-updates/install)

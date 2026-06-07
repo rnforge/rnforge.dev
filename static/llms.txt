@@ -1,0 +1,25 @@
+# RNForge Docs — LLM Context (Summary)
+
+> This is the compact LLM context file for rnforge.dev. Use `/llms-full.txt` for the complete content.
+
+## Site
+
+- **URL:** https://rnforge.dev
+- **Framework:** Docusaurus 3.10.1
+- **Purpose:** RNForge provides native-layer wrapper packages for React Native. Forging the native layer for React Native.
+
+## Package: @rnforge/react-native-in-app-updates
+
+A capability-first, cross-platform React Native API for in-app update flows. Built with Nitro for type-safe native bridging.
+
+- **Android:** Integrates with Google Play Core for immediate and flexible update flows.
+- **iOS:** Reports Play-style flows as unsupported. Provides App Store lookup and store-page helpers.
+
+### Docs Structure
+
+- `/docs` — Main docs landing page.
+- `/docs/packages/react-native-in-app-updates` — Package overview with support matrix and API surface.
+- `/docs/packages/react-native-in-app-updates/install` — Installation and platform requirements.
+- `/docs/packages/react-native-in-app-updates/quickstart` — Quickstart with code examples.
+- `/docs/packages/react-native-in-app-updates/api` — API reference for all exports, types, and helpers.
+- `/updates` — Release notes.

@@ -1,0 +1,136 @@
+# RNForge Docs — Full LLM Context
+
+> Generated from rnforge.dev Docusaurus source. This file contains the complete documentation content as a single markdown file for LLM ingestion.
+
+## Site Overview
+
+RNForge provides native-layer wrapper packages for React Native. Forging the native layer for React Native.
+
+- URL: https://rnforge.dev
+- Framework: Docusaurus 3.10.1
+
+---
+
+## Docs Landing
+
+RNForge provides native-layer wrapper packages for React Native.
+
+### Packages
+
+- @rnforge/react-native-in-app-updates — Capability-first, cross-platform in-app update flows for Android (Play Core) with iOS store-page helpers. Supports immediate and flexible updates, install-state listeners, and typed unsupported-state handling.
+
+---
+
+## Package: @rnforge/react-native-in-app-updates
+
+A capability-first, cross-platform React Native API for in-app update flows. Built with Nitro for type-safe native bridging.
+
+On Android, the package integrates with Google Play Core in-app updates to provide immediate and flexible update flows. On iOS, the package reports Play-style flows as unsupported and provides store-page helpers instead of silently pretending updates can be installed in-app.
+
+### Support Matrix
+
+| Platform | Real In-App Updates | Store Page | Install Listener |
+|---|---|---|---|
+| Android (Google Play) | immediate + flexible | yes | yes |
+| Android (sideload / debug) | unsupported | yes (Play Store fallback) | no |
+| iOS | unsupported | yes (App Store) | unsupported event |
+
+### API Surface
+
+Six main functions: getUpdateStatus, startImmediateUpdate, startFlexibleUpdate, completeFlexibleUpdate, addInstallStateListener, openStorePage.
+
+Six helper predicates: isUpdateAvailable, canStartImmediateUpdate, canStartFlexibleUpdate, canCompleteFlexibleUpdate, canOpenStorePage, supportsInstallStateListener.
+
+### Capability-First Model
+
+Update-status and update-flow APIs return typed UpdateStatus objects rather than throwing for expected unsupported or unavailable states. addInstallStateListener returns a subscription and emits InstallStateEvent objects. openStorePage returns Promise<void> and rejects only for invalid input or unexpected native failures.
+
+### Google Play Distribution Boundary
+
+Real in-app update flows require all of:
+1. The app is installed from Google Play (not sideloaded, not debug builds from Android Studio)
+2. Google Play Services are available and up to date
+3. The installed build is signed with the same certificate as the Play track build
+
+When these requirements are not met, the package returns supported: false with a typed reason.
+
+---
+
+## Install
+
+```bash
+npm install @rnforge/react-native-in-app-updates react-native-nitro-modules
+```
+
+### Requirements
+- React Native 0.75+
+- react-native-nitro-modules (peer dependency)
+- Android: compileSdkVersion 34+, NDK 27+, Google Play Services
+- iOS: Xcode 16.4+, Swift 5.9+
+
+### Testing
+```bash
+bun run typecheck    # TypeScript type checking (src + specs)
+bun run typecheck:example  # TypeScript type checking (example/)
+bunx jest            # Unit tests (Jest, mocked native layer)
+bun run build        # Build verification
+```
+
+---
+
+## API Reference
+
+### Exported Functions
+
+**getUpdateStatus(options?)**
+Check update availability and platform capabilities. Returns Promise<UpdateStatus>.
+Platform: Android + iOS. On Android, queries Play Core; on iOS, performs App Store lookup when appStoreId is provided.
+
+**startImmediateUpdate(options?)**
+Starts an Android immediate update flow (full-screen Play Core dialog). Returns Promise<UpdateStatus>.
+Platform: Android only. iOS returns supported: false with reason: 'unsupported-platform'.
+
+**startFlexibleUpdate(options?)**
+Starts an Android flexible (background) update flow. Returns Promise<UpdateStatus>.
+Platform: Android only. iOS returns supported: false with reason: 'unsupported-platform'.
+
+**completeFlexibleUpdate()**
+Completes a downloaded flexible update. Returns Promise<UpdateStatus>.
+Platform: Android only.
+
+**addInstallStateListener(callback)**
+Listen to Android flexible update download/install progress. Returns Subscription with remove().
+Platform: Android — events fire during lifecycle; iOS — fires single unsupported event, then noop.
+
+**openStorePage(options?)**
+Opens the platform store page for the current app. Returns Promise<void>.
+Android: No options required. iOS: Requires options.ios.appStoreId (digits-only).
+
+### Helper Predicates
+
+- isUpdateAvailable(status) — true when updateAvailable === true
+- canStartImmediateUpdate(status) — true when supported, capabilities.immediate, updateAvailable, and allowed.immediate are all true
+- canStartFlexibleUpdate(status) — true when supported, capabilities.flexible, updateAvailable, and allowed.flexible are all true
+- canCompleteFlexibleUpdate(status) — true when supported, capabilities.flexible, and installStatus === 'downloaded'
+- canOpenStorePage(status) — true when capabilities.storePage === true
+- supportsInstallStateListener(status) — true when capabilities.installStateListener === true
+
+### Core Types
+
+**UpdateStatus** — Returned by getUpdateStatus, startImmediateUpdate, startFlexibleUpdate, completeFlexibleUpdate.
+Fields: platform, supported, updateAvailable, capabilities, allowed, reason, currentVersion, currentBuild, latestStoreVersion, latestStoreBuild, installStatus, android, ios.
+
+**InstallStateEvent** — Emitted by addInstallStateListener.
+Fields: platform, supported, installStatus, reason, bytesDownloaded, totalBytesToDownload, progress, errorCode, message, android.
+
+**InAppUpdatesError** — Thrown for invalid input or unexpected native failures. Extends Error with code and android fields.
+
+### Reason Enums
+
+AvailabilityReason: update-available, no-update-available, developer-triggered-update-in-progress, flexible-update-downloaded, update-not-allowed, context-unavailable, activity-unavailable, user-canceled, unknown.
+
+UnsupportedReason: unsupported-platform, unsupported-os-version, unsupported-install-source, apk-expansion-files-unsupported, missing-app-store-id, play-core-unavailable, store-lookup-unavailable, store-lookup-timeout, store-lookup-network-error, store-lookup-http-error, store-lookup-not-found, store-lookup-invalid-response.
+
+InstallStatus: unknown, pending, downloading, downloaded, installing, installed, failed, canceled, unsupported.
+
+InAppUpdatesErrorCode: invalid-input, bridge-error, native-error, unexpected.

@@ -1,0 +1,28 @@
+---
+title: "@rnforge/react-native-in-app-updates v1.0.0"
+authors: [rnforge]
+date: 2026-06-07
+---
+
+First stable release of `@rnforge/react-native-in-app-updates`. This package provides a capability-first, cross-platform React Native API for in-app update flows, built with [Nitro](https://nitro.margelo.com).
+
+## Features
+
+- **Android immediate updates** — Full-screen Play Core dialog that blocks the user until accepted or declined
+- **Android flexible updates** — Background download with progress listener and deferred completion
+- **iOS App Store lookup** — Version comparison with typed `store-lookup-*` reasons for failure classification
+- **Store page helper** — Cross-platform `openStorePage()` using native URL schemes
+- **Capability-first model** — Typed `UpdateStatus` objects for expected states, exceptions only for invalid input or unexpected native failures
+- **Helper predicates** — `isUpdateAvailable`, `canStartImmediateUpdate`, `canStartFlexibleUpdate`, etc.
+- **Android unsupported-state reasons** — `unsupported-install-source`, `unsupported-os-version`, `apk-expansion-files-unsupported`, `play-core-unavailable`
+- **Asset pack deletion opt-in** — Optional `android.allowAssetPackDeletion` flag for Play Asset Delivery apps
+- **Activity-aware update UI** — `activity-unavailable` reason when no foreground Activity can host the Play UI
+- **Play Core diagnostics** — Raw Play Core details nested under `android.playCore` for diagnostic inspection
+
+## Install
+
+```bash
+npm install @rnforge/react-native-in-app-updates react-native-nitro-modules
+```
+
+See the [docs](/docs/packages/react-native-in-app-updates) for full API reference.

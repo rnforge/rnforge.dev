@@ -1,0 +1,34 @@
+---
+title: Installation
+description: Install @rnforge/react-native-in-app-updates in your React Native project.
+---
+
+# Installation
+
+## Package
+
+```bash npm2yarn
+npm install @rnforge/react-native-in-app-updates
+```
+
+## Peer Dependencies
+
+This package requires:
+
+- `react` >= 18
+- `react-native` >= 0.74
+- `react-native-nitro-modules` >= 0.22
+
+## Platform Setup
+
+### Android
+
+No additional setup required. The package uses Google Play Core libraries bundled with the native module.
+
+**Requirements:**
+- App must be distributed via Google Play Store
+- App must not use APK expansion files
+
+### iOS
+
+No additional setup required. iOS reports update flows as unsupported (typed result, not an error).

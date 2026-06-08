@@ -1,0 +1,60 @@
+---
+title: Quick Start
+description: Get started with @rnforge/react-native-in-app-updates.
+---
+
+# Quick Start
+
+## Check Update Status
+
+```typescript
+import { getUpdateStatus, isUpdateAvailable } from '@rnforge/react-native-in-app-updates';
+
+const status = await getUpdateStatus();
+
+if (isUpdateAvailable(status)) {
+  console.log('Update available:', status.latestStoreBuild);
+}
+```
+
+## Immediate Update (Android)
+
+```typescript
+import { startImmediateUpdate } from '@rnforge/react-native-in-app-updates';
+
+const result = await startImmediateUpdate();
+```
+
+## Flexible Update (Android)
+
+```typescript
+import {
+  startFlexibleUpdate,
+  completeFlexibleUpdate,
+  addInstallStateListener,
+} from '@rnforge/react-native-in-app-updates';
+
+const subscription = addInstallStateListener((event) => {
+  if (event.installStatus === 'downloaded') {
+    completeFlexibleUpdate();
+  }
+});
+
+const result = await startFlexibleUpdate();
+```
+
+## Helper Functions
+
+```typescript
+import {
+  isUpdateAvailable,
+  canStartImmediateUpdate,
+  canStartFlexibleUpdate,
+} from '@rnforge/react-native-in-app-updates';
+
+const status = await getUpdateStatus();
+
+if (isUpdateAvailable(status) && canStartImmediateUpdate(status)) {
+  await startImmediateUpdate();
+}
+```

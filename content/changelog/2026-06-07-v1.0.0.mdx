@@ -1,0 +1,42 @@
+---
+title: 'v1.0.0'
+description: Initial release of @rnforge/react-native-in-app-updates.
+date: 2026-06-07
+---
+
+# v1.0.0
+
+**Released:** June 7, 2026
+
+## Initial Release
+
+First stable release of `@rnforge/react-native-in-app-updates`.
+
+### Features
+
+- **`getUpdateStatus()`** — Check update availability and current install status
+- **`startImmediateUpdate()`** — Start an immediate update flow (Android)
+- **`startFlexibleUpdate()`** — Start a flexible update flow with download progress (Android)
+- **`completeFlexibleUpdate()`** — Complete a flexible update after download (Android)
+- **`openStorePage()`** — Open the app store page as a fallback
+- **`addInstallStateListener()`** — Listen to install state events (download progress, flexible update downloaded)
+
+### Helper Functions
+
+- `isUpdateAvailable(status)`
+- `canStartImmediateUpdate(status)`
+- `canStartFlexibleUpdate(status)`
+- `canCompleteFlexibleUpdate(status)`
+- `canOpenStorePage(status)`
+- `supportsInstallStateListener(status)`
+
+### Platform Support
+
+- **Android**: Full Play Core immediate and flexible update flows
+- **iOS**: Reports Android/Play-style update flows as unsupported (typed result, not error)
+
+### Notes
+
+- Requires Google Play-distributed apps for real update flows
+- APK expansion-file apps are unsupported for Play in-app updates
+- Capability-first API design

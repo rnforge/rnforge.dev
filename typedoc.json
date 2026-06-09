@@ -1,0 +1,18 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["../react-native-in-app-updates/src/index.ts"],
+  "entryPointStrategy": "resolve",
+  "tsconfig": "../react-native-in-app-updates/tsconfig.build.json",
+  "out": "content/docs/packages/react-native-in-app-updates/reference",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "none",
+  "entryFileName": "index.md",
+  "fileExtension": ".mdx",
+  "hideBreadcrumbs": true,
+  "hidePageHeader": true,
+  "textContentMappings": {
+    "title.member": "{name}"
+  },
+  "githubPages": false,
+  "skipErrorChecking": true
+}

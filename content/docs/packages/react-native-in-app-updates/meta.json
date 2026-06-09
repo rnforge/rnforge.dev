@@ -1,4 +1,4 @@
 {
   "title": "React Native In-App Updates",
-  "pages": ["index", "install", "quickstart"]
+  "pages": ["index", "install", "quickstart", "api", "reference"]
 }

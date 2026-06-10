@@ -8,7 +8,7 @@
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "gen:api-reference": "bun run scripts/gen-api-reference.mjs",
-    "check:api-reference": "bun run gen:api-reference && git diff --exit-code content/docs/packages/react-native-in-app-updates/reference.mdx",
+    "check:api-reference": "bun run gen:api-reference && git diff --exit-code -- content/docs/packages/react-native-in-app-updates/reference",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {

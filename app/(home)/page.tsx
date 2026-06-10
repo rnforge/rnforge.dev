@@ -1,7 +1,9 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'RNForge',
+  title: {
+    absolute: 'RNForge',
+  },
   description:
     'React Native packages for in-app updates, distributed via Google Play.',
 };

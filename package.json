@@ -7,8 +7,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "gen:api-reference": "bun run scripts/gen-api-reference.mjs",
-    "check:api-reference": "bun run gen:api-reference && git diff --exit-code -- content/docs/packages/react-native-in-app-updates/reference",
+    "gen:source-snapshot": "bun run scripts/gen-source-snapshot.mjs",
+    "check:source-snapshot": "bun run gen:source-snapshot && git diff --exit-code -- generated/",
     "postinstall": "fumadocs-mdx"
   },
   "dependencies": {
@@ -25,9 +25,8 @@
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "fumadocs-typescript": "^5.2.6",
     "tailwindcss": "^4.1.0",
-    "typedoc": "^0.28.19",
-    "typedoc-plugin-markdown": "^4.12.0",
     "typescript": "^5.8.0"
   }
 }

@@ -4,7 +4,6 @@
     "index",
     "install",
     "quickstart",
-    "api",
-    "reference"
+    "api"
   ]
 }

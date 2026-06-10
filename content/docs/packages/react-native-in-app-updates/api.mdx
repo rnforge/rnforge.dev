@@ -5,7 +5,7 @@ description: Human-readable guide to the @rnforge/react-native-in-app-updates AP
 
 # API Guide
 
-This guide explains how to use `@rnforge/react-native-in-app-updates` effectively. For the complete auto-generated reference, see the [API Reference](./reference/functions).
+This guide covers the public API with examples and source-backed type tables.
 
 ## Capability-First Design
 
@@ -59,6 +59,11 @@ if (status.updateAvailable) {
 
 The `UpdateStatus` object is the core of the API. It tells you:
 
+<AutoTypeTable
+  path="generated/react-native-in-app-updates/src/types.ts"
+  name="UpdateStatus"
+/>
+
 ### Platform Support
 
 ```typescript
@@ -79,6 +84,11 @@ status.latestStoreBuild         // string | number - latest build in store
 
 ### Capabilities
 
+<AutoTypeTable
+  path="generated/react-native-in-app-updates/src/types.ts"
+  name="Capabilities"
+/>
+
 ```typescript
 status.capabilities.immediate           // boolean
 status.capabilities.flexible            // boolean
@@ -90,6 +100,11 @@ status.capabilities.installStateListener // boolean
 ### Allowed Flows
 
 Even if a capability is supported, it might not be allowed right now:
+
+<AutoTypeTable
+  path="generated/react-native-in-app-updates/src/types.ts"
+  name="AllowedFlows"
+/>
 
 ```typescript
 status.allowed.immediate  // boolean - can start immediate update now?
@@ -153,6 +168,11 @@ if (canStartImmediateUpdate(status)) {
 ## Flexible Updates
 
 Flexible updates download in the background while the user continues using the app:
+
+<AutoTypeTable
+  path="generated/react-native-in-app-updates/src/types.ts"
+  name="InstallStateEvent"
+/>
 
 ```typescript
 import {
@@ -235,6 +255,13 @@ await openStorePage({
 ## Error Handling
 
 All API functions can throw `InAppUpdatesError`:
+
+| Code | Meaning |
+|---|---|
+| `invalid-input` | Invalid options or arguments. |
+| `bridge-error` | React Native bridge communication failed. |
+| `native-error` | Native layer reported a failure. |
+| `unexpected` | Any other unexpected failure. |
 
 ```typescript
 import { InAppUpdatesError } from '@rnforge/react-native-in-app-updates';
@@ -407,6 +434,5 @@ async function progressiveUpdate() {
 
 ## Next Steps
 
-- See the [API Reference](./reference) for complete type definitions
 - Check the [Quick Start](./quickstart) for a minimal example
 - Review the [Installation](./install) guide for setup instructions

@@ -4,13 +4,11 @@ export const docs = defineDocs({
   dir: 'content/docs',
   docs: {
     postprocess: {
-      includeProcessedMarkdown: true,
+      includeProcessedMarkdown: {
+        mdxAsPlaceholder: ['AutoTypeTable'],
+      },
     },
   },
-});
-
-export const changelog = defineDocs({
-  dir: 'content/changelog',
 });
 
 export default defineConfig();

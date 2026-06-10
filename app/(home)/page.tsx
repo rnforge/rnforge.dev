@@ -1,3 +1,11 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'RNForge',
+  description:
+    'React Native packages for in-app updates, distributed via Google Play.',
+};
+
 export default function HomePage() {
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-4 py-24 text-center">
@@ -9,16 +17,10 @@ export default function HomePage() {
       </p>
       <div className="mt-8 flex gap-4">
         <a
-          href="/docs"
+          href="/docs/rnforge"
           className="rounded-lg bg-fd-primary px-6 py-3 font-medium text-fd-primary-foreground"
         >
           Documentation
-        </a>
-        <a
-          href="/changelog"
-          className="rounded-lg border border-fd-border px-6 py-3 font-medium"
-        >
-          Changelog
         </a>
       </div>
     </main>

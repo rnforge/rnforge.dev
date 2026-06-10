@@ -4,8 +4,20 @@ import type { ReactNode } from 'react';
 import './global.css';
 
 export const metadata: Metadata = {
-  title: 'RNForge',
-  description: 'React Native packages for in-app updates and more.',
+  title: {
+    template: '%s | RNForge',
+    default: 'RNForge',
+  },
+  description:
+    'React Native packages for in-app updates, distributed via Google Play.',
+  metadataBase: new URL('https://rnforge.dev'),
+  openGraph: {
+    siteName: 'RNForge',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+  },
 };
 
 export default function Layout({ children }: { children: ReactNode }) {

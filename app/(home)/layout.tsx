@@ -7,10 +7,7 @@ export default function Layout({ children }: { children: ReactNode }) {
       nav={{
         title: 'RNForge',
       }}
-      links={[
-        { text: 'Docs', url: '/docs' },
-        { text: 'Changelog', url: '/changelog' },
-      ]}
+      links={[{ text: 'Docs', url: '/docs/rnforge' }]}
     >
       {children}
     </HomeLayout>

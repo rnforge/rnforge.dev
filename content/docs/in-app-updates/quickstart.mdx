@@ -3,6 +3,8 @@ title: Quick Start
 description: Copy the basic status, update-flow, and store-page examples.
 ---
 
+Use these examples when you want the smallest possible calls. For screen-level wiring, see [App Integration](./app-integration).
+
 ## Check Update Status
 
 ```typescript
@@ -19,7 +21,7 @@ if (!status.supported) {
 }
 ```
 
-## Immediate Update (Android)
+## Immediate Update (Android Play)
 
 ```typescript
 import {
@@ -36,7 +38,7 @@ if (canStartImmediateUpdate(status)) {
 }
 ```
 
-## Flexible Update (Android)
+## Flexible Update (Android Play)
 
 ```typescript
 import {
@@ -65,8 +67,13 @@ if (canStartFlexibleUpdate(status)) {
     }
   });
 
-  const result = await startFlexibleUpdate();
-  console.log('Flexible update result:', result.reason);
+  try {
+    const result = await startFlexibleUpdate();
+    console.log('Flexible update result:', result.reason);
+  } catch (error) {
+    subscription.remove();
+    throw error;
+  }
 }
 ```
 
@@ -95,6 +102,8 @@ if (canOpenStorePage(status)) {
 }
 ```
 
+Pass the same iOS options to both calls so the status and store fallback agree.
+
 On Android, `openStorePage()` can be called without options. On iOS, `ios.appStoreId` is required.
 
 ## Common Helpers
@@ -106,6 +115,5 @@ On Android, `openStorePage()` can be called without options. On iOS, `ios.appSto
 | `canStartFlexibleUpdate(status)` | You want to start a background Android Play update download. |
 | `canCompleteFlexibleUpdate(status)` | A flexible update has downloaded and can be installed. |
 | `canOpenStorePage(status)` | You want a store-page fallback for unsupported update flows. |
-| `supportsInstallStateListener(status)` | You want to subscribe to flexible update progress events. |
 
 See [App Integration](./app-integration) for a full React component example that combines these helpers.

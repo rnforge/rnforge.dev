@@ -22,9 +22,10 @@ if (status.capabilities.flexible) {
 ```
 
 This approach works because:
-- iOS reports all capabilities as `false` (in-app updates aren't supported)
-- Android without Play Store reports capabilities as `false`
-- Android with Play Store reports actual capabilities
+- iOS reports immediate and flexible update capabilities as `false`
+- iOS can still report store-page and version-lookup capability when App Store options are provided
+- Android installs that cannot run Play update flows report those flow capabilities as `false`
+- Android Play installs report the update capabilities allowed by Play Core
 - Your code works everywhere without platform checks
 
 ## Typed Results, Not Exceptions
@@ -197,8 +198,13 @@ if (canStartFlexibleUpdate(status)) {
     }
   });
 
-  const result = await startFlexibleUpdate();
-  console.log('Flexible update result:', result.reason);
+  try {
+    const result = await startFlexibleUpdate();
+    console.log('Flexible update result:', result.reason);
+  } catch (error) {
+    subscription?.remove();
+    throw error;
+  }
 }
 ```
 
@@ -238,7 +244,7 @@ On Android, `openStorePage()` can be called without options. On iOS, pass `ios.a
 
 ## Error Handling
 
-All API functions can throw `InAppUpdatesError`:
+Async functions that call the native module can throw `InAppUpdatesError`. Helper functions only read an `UpdateStatus` object.
 
 | Code | Meaning |
 |---|---|
@@ -341,10 +347,10 @@ These helpers check multiple conditions (support, capability, availability, allo
 
 ### iOS
 
-- In-app updates are **not supported** (all capabilities report `false`)
-- Store page opening **is supported** (requires `appStoreId`)
-- Version lookup **is supported** (via App Store API)
-- `status.supported` is `false` with reason `'unsupported-platform'`
+- Immediate and flexible update flows are **not supported**
+- Store page opening requires `ios.appStoreId`
+- Version lookup uses the App Store lookup API when `ios.appStoreId` is provided
+- `getUpdateStatus()` can return `missing-app-store-id` when App Store lookup options are missing
 - Use `openStorePage()` as the update mechanism
 
 ## Common Patterns

@@ -3,7 +3,7 @@ title: App Integration
 description: Wire update checks into a React Native screen.
 ---
 
-This example shows a complete React component that loads update status, starts immediate or flexible update flows, tracks download progress, and falls back to the store page when needed.
+This example shows a complete React component that loads update status, starts immediate or flexible update flows, and falls back to the store page when needed.
 
 ## InAppUpdatePanel
 
@@ -47,7 +47,7 @@ export function InAppUpdatePanel() {
       if (error instanceof InAppUpdatesError) {
         setMessage(error.message);
       } else {
-        setMessage('Something went wrong while checking for updates.');
+        setMessage('Unable to check for updates.');
       }
     } finally {
       setLoading(false);
@@ -73,7 +73,7 @@ export function InAppUpdatePanel() {
       if (error instanceof InAppUpdatesError) {
         setMessage(error.message);
       } else {
-        setMessage('Something went wrong while starting the update.');
+        setMessage('Unable to start the update.');
       }
     } finally {
       setLoading(false);
@@ -100,7 +100,7 @@ export function InAppUpdatePanel() {
             if (error instanceof InAppUpdatesError) {
               setMessage(error.message);
             } else {
-              setMessage('Something went wrong while completing the update.');
+              setMessage('Unable to complete the update.');
             }
           });
       }
@@ -115,7 +115,7 @@ export function InAppUpdatePanel() {
       if (error instanceof InAppUpdatesError) {
         setMessage(error.message);
       } else {
-        setMessage('Something went wrong while starting the download.');
+        setMessage('Unable to start the download.');
       }
     } finally {
       setLoading(false);
@@ -132,7 +132,7 @@ export function InAppUpdatePanel() {
       if (error instanceof InAppUpdatesError) {
         setMessage(error.message);
       } else {
-        setMessage('Something went wrong while opening the store.');
+        setMessage('Unable to open the store.');
       }
     } finally {
       setLoading(false);
@@ -142,9 +142,9 @@ export function InAppUpdatePanel() {
   return (
     <View>
       <Text>Platform: {status?.platform ?? '...'}</Text>
-      <Text>Supported: {status?.supported ? 'yes' : 'no'}</Text>
+      <Text>Supported: {status == null ? '...' : status.supported ? 'yes' : 'no'}</Text>
       <Text>
-        Update available: {status?.updateAvailable == null ? 'unknown' : status.updateAvailable ? 'yes' : 'no'}
+        Update available: {status == null ? '...' : status.updateAvailable == null ? 'unknown' : status.updateAvailable ? 'yes' : 'no'}
       </Text>
       {status?.reason ? <Text>Reason: {status.reason}</Text> : null}
       {message ? <Text>{message}</Text> : null}
@@ -167,8 +167,7 @@ export function InAppUpdatePanel() {
 ## Notes
 
 - Check status before starting a flow. Use helper functions like `canStartImmediateUpdate` and `canStartFlexibleUpdate` to guard each action.
-- Register the install-state listener before calling `startFlexibleUpdate()` so you receive download progress from the start.
+- Register the install-state listener before calling `startFlexibleUpdate()` so you receive events from the start.
 - Clean up the listener on unmount to avoid stale callbacks.
-- Complete a flexible update only when the install status is `downloaded`.
+- Complete a flexible update when the listener reports `event.installStatus === 'downloaded'`. If you refresh status separately and show a manual Complete update button, guard it with `canCompleteFlexibleUpdate(status)`.
 - Use the store page fallback when an in-app update flow is not available.
-- If you refresh status separately and want to show a manual Complete update button, guard it with `canCompleteFlexibleUpdate(status)`.

@@ -377,61 +377,11 @@ async function checkForUpdate() {
 
 ### Progressive Update Flow
 
-```typescript
-import {
-  getUpdateStatus,
-  canStartImmediateUpdate,
-  startImmediateUpdate,
-  canStartFlexibleUpdate,
-  addInstallStateListener,
-  completeFlexibleUpdate,
-  canOpenStorePage,
-  openStorePage,
-} from '@rnforge/react-native-in-app-updates';
-
-async function progressiveUpdate() {
-  const storeOptions = {
-    ios: {
-      appStoreId: '123456789',
-      country: 'us',
-    },
-  };
-
-  const status = await getUpdateStatus(storeOptions);
-
-  // Try immediate first (for critical updates)
-  if (canStartImmediateUpdate(status)) {
-    await startImmediateUpdate();
-    return;
-  }
-
-  // Fall back to flexible
-  if (canStartFlexibleUpdate(status)) {
-    let subscription: { remove: () => void } | undefined;
-
-    subscription = addInstallStateListener((event) => {
-      if (event.installStatus === 'downloaded') {
-        void completeFlexibleUpdate().finally(() => {
-          subscription?.remove();
-        });
-      }
-    });
-
-    await startFlexibleUpdate();
-    return;
-  }
-
-  // Fall back to store page
-  if (canOpenStorePage(status)) {
-    await openStorePage(storeOptions);
-    return;
-  }
-
-  console.log('No update mechanism available');
-}
-```
+A common pattern is to try immediate updates first for critical updates, fall back to flexible for non-critical updates, and use the store page as a last resort. See [App Integration](./app-integration) for a full React component that implements this fallback chain.
 
 ## Next Steps
 
 - Check the [Quick Start](./quickstart) for a minimal example
 - Review the [Installation](./install) guide for setup instructions
+- See [App Integration](./app-integration) for a full React component example
+- See [Troubleshooting](./troubleshooting) for common issues and fixes

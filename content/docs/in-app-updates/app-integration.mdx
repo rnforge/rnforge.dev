@@ -1,0 +1,174 @@
+---
+title: App Integration
+description: Wire update checks into a React Native screen.
+---
+
+This example shows a complete React component that loads update status, starts immediate or flexible update flows, tracks download progress, and falls back to the store page when needed.
+
+## InAppUpdatePanel
+
+```tsx
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Button, Text, View } from 'react-native';
+import {
+  addInstallStateListener,
+  canOpenStorePage,
+  canStartFlexibleUpdate,
+  canStartImmediateUpdate,
+  completeFlexibleUpdate,
+  getUpdateStatus,
+  InAppUpdatesError,
+  openStorePage,
+  startFlexibleUpdate,
+  startImmediateUpdate,
+} from '@rnforge/react-native-in-app-updates';
+import type { InstallStateSubscription, UpdateStatus } from '@rnforge/react-native-in-app-updates';
+
+const storeOptions = {
+  ios: {
+    appStoreId: '1234567890',
+    country: 'us',
+  },
+};
+
+export function InAppUpdatePanel() {
+  const [status, setStatus] = useState<UpdateStatus | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const subscriptionRef = useRef<InstallStateSubscription | null>(null);
+
+  const loadStatus = useCallback(async () => {
+    setLoading(true);
+    setMessage(null);
+    try {
+      const next = await getUpdateStatus(storeOptions);
+      setStatus(next);
+    } catch (error) {
+      if (error instanceof InAppUpdatesError) {
+        setMessage(error.message);
+      } else {
+        setMessage('Something went wrong while checking for updates.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadStatus();
+    return () => {
+      subscriptionRef.current?.remove();
+      subscriptionRef.current = null;
+    };
+  }, [loadStatus]);
+
+  const startImmediate = useCallback(async () => {
+    if (!status || !canStartImmediateUpdate(status)) return;
+    setLoading(true);
+    setMessage(null);
+    try {
+      const next = await startImmediateUpdate();
+      setStatus(next);
+    } catch (error) {
+      if (error instanceof InAppUpdatesError) {
+        setMessage(error.message);
+      } else {
+        setMessage('Something went wrong while starting the update.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [status]);
+
+  const startFlexible = useCallback(async () => {
+    if (!status || !canStartFlexibleUpdate(status)) return;
+    setLoading(true);
+    setMessage(null);
+
+    subscriptionRef.current?.remove();
+    subscriptionRef.current = null;
+
+    subscriptionRef.current = addInstallStateListener((event) => {
+      if (event.installStatus === 'downloaded') {
+        void completeFlexibleUpdate()
+          .then((next) => {
+            setStatus(next);
+            subscriptionRef.current?.remove();
+            subscriptionRef.current = null;
+          })
+          .catch((error) => {
+            if (error instanceof InAppUpdatesError) {
+              setMessage(error.message);
+            } else {
+              setMessage('Something went wrong while completing the update.');
+            }
+          });
+      }
+    });
+
+    try {
+      const next = await startFlexibleUpdate();
+      setStatus(next);
+    } catch (error) {
+      subscriptionRef.current?.remove();
+      subscriptionRef.current = null;
+      if (error instanceof InAppUpdatesError) {
+        setMessage(error.message);
+      } else {
+        setMessage('Something went wrong while starting the download.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [status]);
+
+  const openStore = useCallback(async () => {
+    if (!status || !canOpenStorePage(status)) return;
+    setLoading(true);
+    setMessage(null);
+    try {
+      await openStorePage(storeOptions);
+    } catch (error) {
+      if (error instanceof InAppUpdatesError) {
+        setMessage(error.message);
+      } else {
+        setMessage('Something went wrong while opening the store.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [status]);
+
+  return (
+    <View>
+      <Text>Platform: {status?.platform ?? '...'}</Text>
+      <Text>Supported: {status?.supported ? 'yes' : 'no'}</Text>
+      <Text>
+        Update available: {status?.updateAvailable == null ? 'unknown' : status.updateAvailable ? 'yes' : 'no'}
+      </Text>
+      {status?.reason ? <Text>Reason: {status.reason}</Text> : null}
+      {message ? <Text>{message}</Text> : null}
+
+      <Button title="Check again" onPress={loadStatus} disabled={loading} />
+      {status && canStartImmediateUpdate(status) ? (
+        <Button title="Update now" onPress={startImmediate} disabled={loading} />
+      ) : null}
+      {status && canStartFlexibleUpdate(status) ? (
+        <Button title="Download update" onPress={startFlexible} disabled={loading} />
+      ) : null}
+      {status && canOpenStorePage(status) ? (
+        <Button title="Open store" onPress={openStore} disabled={loading} />
+      ) : null}
+    </View>
+  );
+}
+```
+
+## Notes
+
+- Check status before starting a flow. Use helper functions like `canStartImmediateUpdate` and `canStartFlexibleUpdate` to guard each action.
+- Register the install-state listener before calling `startFlexibleUpdate()` so you receive download progress from the start.
+- Clean up the listener on unmount to avoid stale callbacks.
+- Complete a flexible update only when the install status is `downloaded`.
+- Use the store page fallback when an in-app update flow is not available.
+- If you refresh status separately and want to show a manual Complete update button, guard it with `canCompleteFlexibleUpdate(status)`.

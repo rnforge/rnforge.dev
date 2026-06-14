@@ -1,0 +1,77 @@
+---
+title: Troubleshooting
+description: Common update checks, install issues, and store fallback problems.
+---
+
+Most expected states come back as typed results on the status object, not thrown errors. If an API call throws, it is usually a native module setup problem or invalid input. This page covers the most common issues and how to fix them.
+
+## Android says updates are not available
+
+Real Play update flows only work when the app is distributed through Google Play. Debug builds, sideloaded installs, and apps signed with a different certificate commonly return `unsupported-install-source`.
+
+If the device does not have Google Play Services, the status may return `play-core-unavailable` instead.
+
+These are expected results, not crashes. Show a fallback UI (such as the store page) instead of treating the unsupported status as an error.
+
+## iOS returns missing-app-store-id
+
+iOS store lookup and store page opening need an App Store ID. Without one, `getUpdateStatus()` returns `supported: false` with reason `missing-app-store-id`.
+
+Pass `ios.appStoreId` to both `getUpdateStatus()` and `openStorePage()`:
+
+```typescript
+const storeOptions = {
+  ios: {
+    appStoreId: '1234567890',
+  },
+};
+
+const status = await getUpdateStatus(storeOptions);
+await openStorePage(storeOptions);
+```
+
+## Native module is not found
+
+This package includes native code. If the module is not found, rebuild your native projects after installing.
+
+1. **React Native CLI (iOS):** run `cd ios && pod install`, then rebuild from Xcode or your normal React Native command.
+2. **Expo:** use a development build. Run `npx expo prebuild`, then build and run a development app with your normal Expo workflow. Expo Go is not supported.
+
+See [Installation](./install) for the full setup steps.
+
+## Flexible update does not complete
+
+Call `completeFlexibleUpdate()` only after the download is ready. Do not call it immediately after `startFlexibleUpdate()`.
+
+In the listener, check the event:
+
+```typescript
+if (event.installStatus === 'downloaded') {
+  await completeFlexibleUpdate();
+}
+```
+
+If you refresh status separately, you can also guard with `canCompleteFlexibleUpdate(status)`.
+
+## Store page does not open
+
+Check `canOpenStorePage(status)` before calling `openStorePage()`.
+
+- On Android, the store page depends on the package being available in the Play Store.
+- On iOS, `ios.appStoreId` is required. Without it, `openStorePage()` throws `InAppUpdatesError` with code `invalid-input`.
+
+Invalid input, bridge failures, and native failures throw `InAppUpdatesError`. Check `error.code` to narrow the cause.
+
+## The listener never fires
+
+Register the listener before calling `startFlexibleUpdate()`. If you register it after, you may miss the download events.
+
+Keep the subscription alive while the update downloads. In a React component, store the subscription in a ref and remove it in the cleanup function when the screen unmounts.
+
+The listener is for flexible update progress. It does not fire for immediate updates.
+
+## Testing with debug builds
+
+Debug and sideload builds are useful for testing fallback UI, error handling, and store page behavior.
+
+Real Android update flows (immediate and flexible) must be validated with a Play-distributed build. Do not expect these flows to run in a normal debug install.

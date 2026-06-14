@@ -1,4 +1,4 @@
 {
   "title": "In-App Updates",
-  "pages": ["index", "install", "quickstart", "api"]
+  "pages": ["index", "install", "quickstart", "app-integration", "api", "troubleshooting"]
 }

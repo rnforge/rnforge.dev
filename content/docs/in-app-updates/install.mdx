@@ -9,6 +9,34 @@ description: Add the package, Nitro peer dependency, and native requirements.
 npm install @rnforge/react-native-in-app-updates react-native-nitro-modules
 ```
 
+## Rebuild Native Projects
+
+This package includes native code. After installing, rebuild your native projects.
+
+### React Native CLI
+
+**iOS:**
+
+```bash
+cd ios && pod install
+```
+
+Then rebuild from Xcode or your normal React Native command.
+
+**Android:**
+
+Rebuild from Android Studio or your normal React Native command.
+
+### Expo
+
+Use a development build because this package includes native code.
+
+```bash
+npx expo prebuild
+```
+
+Then build and run a development app with your normal Expo workflow.
+
 ## Requirements
 
 The package is built with Nitro and requires:
@@ -55,4 +83,4 @@ console.log(status.supported);
 console.log(status.reason);
 ```
 
-On iOS without an App Store ID, `supported` is `false` and `reason` is `missing-app-store-id`. On Android debug or sideload installs, `supported` is usually `false` with `unsupported-install-source`.
+On iOS without an App Store ID, `supported` is `false` and `reason` is `missing-app-store-id`. On Android debug or sideload installs, `supported` is usually `false` with `unsupported-install-source`. See [Troubleshooting](./troubleshooting) if the status does not match what you expect.

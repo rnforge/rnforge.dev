@@ -24,6 +24,12 @@ export default function HomePage() {
         >
           Open Docs
         </a>
+        <a
+          href="/docs/in-app-updates"
+          className="rounded-lg border border-fd-border px-6 py-3 font-medium text-fd-foreground"
+        >
+          In-App Updates
+        </a>
       </div>
     </main>
   );

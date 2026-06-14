@@ -5,21 +5,39 @@ description: Capability-first Android update flows with safe cross-platform fall
 
 Capability-first in-app update support for React Native.
 
-- **Android**: Play Core immediate and flexible update flows
-- **iOS**: Reports Android/Play-style update flows as unsupported
-- **TypeScript**: Cross-platform typed API
+Use one status model across platforms instead of scattering platform checks through your app. Android Play installs can start Play Core immediate or flexible update flows. iOS and unsupported Android installs return typed unavailable states and can still use the store-page fallback where possible.
+
+## Support Matrix
+
+| Platform | Real in-app updates | Store page | Install listener |
+|---|---|---|---|
+| Android installed from Google Play | Immediate + flexible | Yes | Yes |
+| Android sideload/debug install | Unsupported typed result | Play Store fallback | No |
+| iOS | Unsupported typed result | App Store fallback | Unsupported event |
 
 ## Features
 
-- Check update availability and status
-- Start immediate updates (Android)
-- Start flexible updates with download progress (Android)
-- Complete flexible updates after download (Android)
-- Open store page as fallback
-- Listen to install state events
+- Check update availability, current app version, and store version details.
+- Start Android immediate updates when Play policy allows them.
+- Start Android flexible updates, track download progress, and complete the downloaded update.
+- Open the Play Store or App Store as a fallback.
+- Handle unsupported devices, unsupported install sources, user cancellation, and missing store metadata as typed results.
 
-## Packages
+## Public API
 
-| Package | Description |
-|---------|-------------|
-| `@rnforge/react-native-in-app-updates` | In-app updates via Google Play |
+| Area | APIs |
+|---|---|
+| Status | `getUpdateStatus`, `isUpdateAvailable` |
+| Android update flows | `startImmediateUpdate`, `startFlexibleUpdate`, `completeFlexibleUpdate` |
+| Store fallback | `openStorePage`, `canOpenStorePage` |
+| Flexible progress | `addInstallStateListener`, `supportsInstallStateListener` |
+| Flow guards | `canStartImmediateUpdate`, `canStartFlexibleUpdate`, `canCompleteFlexibleUpdate` |
+
+## Start Here
+
+1. Install the package and Nitro peer dependency.
+2. Call `getUpdateStatus()` before starting any update flow.
+3. Use helper predicates like `canStartImmediateUpdate(status)` instead of manually checking multiple fields.
+4. Use `openStorePage()` as the iOS and unsupported-install fallback.
+
+[Install the package](/docs/in-app-updates/install) or jump to the [Quick Start](/docs/in-app-updates/quickstart).

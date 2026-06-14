@@ -10,49 +10,100 @@ import { getUpdateStatus, isUpdateAvailable } from '@rnforge/react-native-in-app
 
 const status = await getUpdateStatus();
 
-if (isUpdateAvailable(status)) {
-  console.log('Update available:', status.latestStoreBuild);
+if (!status.supported) {
+  console.log('Updates are not supported:', status.reason);
+} else if (isUpdateAvailable(status)) {
+  console.log('Update available:', status.latestStoreVersion ?? status.latestStoreBuild);
+} else {
+  console.log('App is up to date');
 }
 ```
 
 ## Immediate Update (Android)
 
 ```typescript
-import { startImmediateUpdate } from '@rnforge/react-native-in-app-updates';
+import {
+  getUpdateStatus,
+  startImmediateUpdate,
+  canStartImmediateUpdate,
+} from '@rnforge/react-native-in-app-updates';
 
-const result = await startImmediateUpdate();
+const status = await getUpdateStatus();
+
+if (canStartImmediateUpdate(status)) {
+  const result = await startImmediateUpdate();
+  console.log('Immediate update result:', result.reason);
+}
 ```
 
 ## Flexible Update (Android)
 
 ```typescript
 import {
+  getUpdateStatus,
   startFlexibleUpdate,
   completeFlexibleUpdate,
   addInstallStateListener,
-} from '@rnforge/react-native-in-app-updates';
-
-const subscription = addInstallStateListener((event) => {
-  if (event.installStatus === 'downloaded') {
-    completeFlexibleUpdate();
-  }
-});
-
-const result = await startFlexibleUpdate();
-```
-
-## Helper Functions
-
-```typescript
-import {
-  isUpdateAvailable,
-  canStartImmediateUpdate,
   canStartFlexibleUpdate,
 } from '@rnforge/react-native-in-app-updates';
 
 const status = await getUpdateStatus();
 
-if (isUpdateAvailable(status) && canStartImmediateUpdate(status)) {
-  await startImmediateUpdate();
+if (canStartFlexibleUpdate(status)) {
+  let subscription: { remove: () => void } | undefined;
+
+  subscription = addInstallStateListener((event) => {
+    if (event.installStatus === 'downloading') {
+      console.log('Download progress:', event.progress);
+    }
+
+    if (event.installStatus === 'downloaded') {
+      console.log('Flexible update downloaded');
+      void completeFlexibleUpdate().finally(() => {
+        subscription?.remove();
+      });
+    }
+  });
+
+  const result = await startFlexibleUpdate();
+  console.log('Flexible update result:', result.reason);
 }
 ```
+
+Keep the subscription alive while the flexible download is active. In a React component, call `subscription.remove()` from your cleanup function when the screen unmounts.
+
+## Store Page Fallback
+
+```typescript
+import {
+  getUpdateStatus,
+  openStorePage,
+  canOpenStorePage,
+} from '@rnforge/react-native-in-app-updates';
+
+const storeOptions = {
+  ios: {
+    appStoreId: '1234567890',
+    country: 'us',
+  },
+};
+
+const status = await getUpdateStatus(storeOptions);
+
+if (canOpenStorePage(status)) {
+  await openStorePage(storeOptions);
+}
+```
+
+On Android, `openStorePage()` can be called without options. On iOS, `ios.appStoreId` is required.
+
+## Common Helpers
+
+| Helper | Use it when |
+|---|---|
+| `isUpdateAvailable(status)` | You only need to know whether a newer version is available. |
+| `canStartImmediateUpdate(status)` | You want to start the blocking Android Play update UI. |
+| `canStartFlexibleUpdate(status)` | You want to start a background Android Play update download. |
+| `canCompleteFlexibleUpdate(status)` | A flexible update has downloaded and can be installed. |
+| `canOpenStorePage(status)` | You want a store-page fallback for unsupported update flows. |
+| `supportsInstallStateListener(status)` | You want to subscribe to flexible update progress events. |

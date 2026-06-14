@@ -8,6 +8,8 @@ description: Learn the update status model, helper predicates, update flows, and
 The API is designed around **capabilities** rather than platform detection. Instead of checking `if (Platform.OS === 'android')`, you check what the current environment supports:
 
 ```typescript
+import { getUpdateStatus } from '@rnforge/react-native-in-app-updates';
+
 const status = await getUpdateStatus();
 
 if (status.capabilities.immediate) {
@@ -36,11 +38,7 @@ const status = await getUpdateStatus();
 if (!status.supported) {
   console.log('Reason:', status.reason);
   // 'unsupported-platform' | 'unsupported-install-source' | etc.
-  return;
-}
-
-// Check if an update is available
-if (status.updateAvailable) {
+} else if (status.updateAvailable) {
   console.log('Current:', status.currentVersion);
   console.log('Latest:', status.latestStoreVersion);
 }
@@ -49,6 +47,7 @@ if (status.updateAvailable) {
 **Exceptions are only thrown for actual errors:**
 - Invalid input (e.g., missing required options)
 - Native bridge failures
+- Native layer failures
 - Unexpected runtime errors
 
 ## Update Status
@@ -113,7 +112,7 @@ For flexible updates, track the installation lifecycle:
 
 ```typescript
 status.installStatus
-// 'unknown' | 'pending' | 'downloading' | 'downloaded' | 
+// 'unknown' | 'pending' | 'downloading' | 'downloaded' |
 // 'installing' | 'installed' | 'failed' | 'canceled' | 'unsupported'
 ```
 
@@ -137,10 +136,10 @@ status.ios?.appStore?.releaseNotes
 Immediate updates show a blocking UI that forces the user to update before continuing:
 
 ```typescript
-import { 
-  getUpdateStatus, 
+import {
+  getUpdateStatus,
   startImmediateUpdate,
-  canStartImmediateUpdate 
+  canStartImmediateUpdate
 } from '@rnforge/react-native-in-app-updates';
 
 const status = await getUpdateStatus();
@@ -177,38 +176,29 @@ import {
   completeFlexibleUpdate,
   addInstallStateListener,
   canStartFlexibleUpdate,
-  canCompleteFlexibleUpdate,
 } from '@rnforge/react-native-in-app-updates';
 
 const status = await getUpdateStatus();
 
 if (canStartFlexibleUpdate(status)) {
-  // Start the download
-  await startFlexibleUpdate();
+  let subscription: { remove: () => void } | undefined;
 
-  // Listen for progress
-  const subscription = addInstallStateListener((event) => {
+  subscription = addInstallStateListener((event) => {
     if (event.installStatus === 'downloading') {
       const progress = event.progress ?? 0;
       console.log(`Downloaded: ${(progress * 100).toFixed(1)}%`);
     }
 
     if (event.installStatus === 'downloaded') {
-      // Update is ready to install
-      console.log('Update downloaded, ready to install');
+      console.log('Update downloaded, installing');
+      void completeFlexibleUpdate().finally(() => {
+        subscription?.remove();
+      });
     }
   });
 
-  // Later, when the update is downloaded...
-  const newStatus = await getUpdateStatus();
-  
-  if (canCompleteFlexibleUpdate(newStatus)) {
-    // Install the update (app will restart)
-    await completeFlexibleUpdate();
-  }
-
-  // Clean up listener when done
-  subscription.remove();
+  const result = await startFlexibleUpdate();
+  console.log('Flexible update result:', result.reason);
 }
 ```
 
@@ -225,28 +215,26 @@ If in-app updates aren't supported, you can still open the store page:
 ```typescript
 import { openStorePage, canOpenStorePage, getUpdateStatus } from '@rnforge/react-native-in-app-updates';
 
-const status = await getUpdateStatus();
+const storeOptions = {
+  ios: {
+    appStoreId: '123456789',
+    country: 'us',
+  },
+};
+
+const status = await getUpdateStatus(storeOptions);
 
 if (canOpenStorePage(status)) {
   try {
-    await openStorePage();
-    // Opens Play Store on Android or App Store on iOS
+    await openStorePage(storeOptions);
+    // Opens Play Store on Android or App Store on iOS.
   } catch (error) {
     console.error('Failed to open store:', error);
   }
 }
 ```
 
-**iOS requires an App Store ID:**
-
-```typescript
-await openStorePage({
-  ios: {
-    appStoreId: '123456789',  // Required on iOS
-    country: 'us',             // Optional - two-letter country code
-  },
-});
-```
+On Android, `openStorePage()` can be called without options. On iOS, pass `ios.appStoreId` to both `getUpdateStatus()` and `openStorePage()` so the status result can report the store-page capability correctly.
 
 ## Error Handling
 
@@ -271,12 +259,12 @@ try {
         // You passed invalid options
         console.error('Invalid input:', error.message);
         break;
-      
+
       case 'bridge-error':
         // React Native bridge communication failed
         console.error('Bridge error:', error.message);
         break;
-      
+
       case 'native-error':
         // Native layer reported an error
         console.error('Native error:', error.message);
@@ -284,7 +272,7 @@ try {
           console.error('Android details:', error.android);
         }
         break;
-      
+
       case 'unexpected':
         // Something unexpected happened
         console.error('Unexpected error:', error.message);
@@ -303,6 +291,7 @@ The API provides helper functions to check status before acting:
 
 ```typescript
 import {
+  getUpdateStatus,
   isUpdateAvailable,
   canStartImmediateUpdate,
   canStartFlexibleUpdate,
@@ -367,17 +356,17 @@ import { getUpdateStatus, isUpdateAvailable } from '@rnforge/react-native-in-app
 
 async function checkForUpdate() {
   const status = await getUpdateStatus();
-  
+
   if (!status.supported) {
     console.log('Updates not supported:', status.reason);
     return null;
   }
-  
+
   if (!isUpdateAvailable(status)) {
     console.log('App is up to date');
     return null;
   }
-  
+
   return {
     current: status.currentVersion,
     latest: status.latestStoreVersion,
@@ -389,41 +378,55 @@ async function checkForUpdate() {
 ### Progressive Update Flow
 
 ```typescript
+import {
+  getUpdateStatus,
+  canStartImmediateUpdate,
+  startImmediateUpdate,
+  canStartFlexibleUpdate,
+  addInstallStateListener,
+  completeFlexibleUpdate,
+  canOpenStorePage,
+  openStorePage,
+} from '@rnforge/react-native-in-app-updates';
+
 async function progressiveUpdate() {
-  const status = await getUpdateStatus();
-  
+  const storeOptions = {
+    ios: {
+      appStoreId: '123456789',
+      country: 'us',
+    },
+  };
+
+  const status = await getUpdateStatus(storeOptions);
+
   // Try immediate first (for critical updates)
   if (canStartImmediateUpdate(status)) {
     await startImmediateUpdate();
     return;
   }
-  
+
   // Fall back to flexible
   if (canStartFlexibleUpdate(status)) {
-    await startFlexibleUpdate();
-    
-    // Wait for download...
-    const subscription = addInstallStateListener((event) => {
+    let subscription: { remove: () => void } | undefined;
+
+    subscription = addInstallStateListener((event) => {
       if (event.installStatus === 'downloaded') {
-        // Prompt user to restart
-        showRestartDialog(() => {
-          completeFlexibleUpdate();
+        void completeFlexibleUpdate().finally(() => {
+          subscription?.remove();
         });
-        subscription.remove();
       }
     });
-    
+
+    await startFlexibleUpdate();
     return;
   }
-  
+
   // Fall back to store page
   if (canOpenStorePage(status)) {
-    showUpdateAvailableDialog(() => {
-      openStorePage();
-    });
+    await openStorePage(storeOptions);
     return;
   }
-  
+
   console.log('No update mechanism available');
 }
 ```

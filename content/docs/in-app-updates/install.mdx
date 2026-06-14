@@ -6,27 +6,53 @@ description: Install @rnforge/react-native-in-app-updates in your React Native p
 ## Package
 
 ```npm
-npm install @rnforge/react-native-in-app-updates
+npm install @rnforge/react-native-in-app-updates react-native-nitro-modules
 ```
 
-## Peer Dependencies
+## Requirements
 
-This package requires:
+The package is built with Nitro and requires:
 
-- `react` >= 18
-- `react-native` >= 0.74
-- `react-native-nitro-modules` >= 0.22
+| Area | Requirement |
+|---|---|
+| React Native | `0.75+` |
+| Native bridge | `react-native-nitro-modules` |
+| Android | `compileSdkVersion 34+`, NDK `27+`, Google Play Services |
+| iOS | Xcode `16.4+`, Swift `5.9+` |
 
 ## Platform Setup
 
 ### Android
 
-No additional setup required. The package uses Google Play Core libraries bundled with the native module.
+No JavaScript setup is required after installation. The native module uses Google Play Core for real in-app update flows.
 
-**Requirements:**
-- App must be distributed via Google Play Store
-- App must not use APK expansion files
+Real update flows require the app to be:
+
+- installed from Google Play, not sideloaded or installed from a debug build
+- signed with the same certificate as the Play track build
+- running on a device with Google Play Services available
+- built without legacy APK expansion (`.obb`) files
+
+If those requirements are not met, APIs return typed unsupported results instead of pretending an update can run.
 
 ### iOS
 
-No additional setup required. iOS reports update flows as unsupported (typed result, not an error).
+No additional setup is required. iOS does not support Google Play-style immediate or flexible in-app updates, so update-flow APIs return typed unsupported results.
+
+Use `openStorePage({ ios: { appStoreId } })` to send users to the App Store.
+
+## Verify Installation
+
+Verify the installation from your app after installing:
+
+```typescript
+import { getUpdateStatus } from '@rnforge/react-native-in-app-updates';
+
+const status = await getUpdateStatus();
+
+console.log(status.platform);
+console.log(status.supported);
+console.log(status.reason);
+```
+
+On iOS without an App Store ID, `supported` is `false` and `reason` is `missing-app-store-id`. On Android debug or sideload installs, `supported` is usually `false` with `unsupported-install-source`.

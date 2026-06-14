@@ -3,9 +3,7 @@ title: Overview
 description: Capability-first Android update flows with safe cross-platform fallbacks.
 ---
 
-Capability-first in-app update support for React Native.
-
-Use one status model across platforms instead of scattering platform checks through your app. Android Play installs can start Play Core immediate or flexible update flows. iOS and unsupported Android installs return typed unavailable states and can still use the store-page fallback where possible.
+One status object covers Android Play installs, sideloaded or debug builds, and iOS. You get the same shape back everywhere — update availability, version info, and what flows are allowed — so your app code stays the same regardless of where it's running.
 
 ## Support Matrix
 

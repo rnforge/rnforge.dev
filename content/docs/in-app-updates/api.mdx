@@ -5,7 +5,7 @@ description: Learn the update status model, helper predicates, update flows, and
 
 ## Capability-First Design
 
-The API is designed around **capabilities** rather than platform detection. Instead of checking `if (Platform.OS === 'android')`, you check what the current environment supports:
+Capability-first means checking what the current install can do before starting an update flow. Instead of checking `if (Platform.OS === 'android')`, you check what the current environment supports:
 
 ```typescript
 import { getUpdateStatus } from '@rnforge/react-native-in-app-updates';

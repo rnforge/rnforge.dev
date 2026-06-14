@@ -43,7 +43,7 @@ Use `openStorePage({ ios: { appStoreId } })` to send users to the App Store.
 
 ## Verify Installation
 
-Verify the installation from your app after installing:
+After installing, call the API once to confirm the native module loads:
 
 ```typescript
 import { getUpdateStatus } from '@rnforge/react-native-in-app-updates';

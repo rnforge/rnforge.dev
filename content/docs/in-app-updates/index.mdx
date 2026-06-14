@@ -3,15 +3,20 @@ title: Overview
 description: Capability-first Android update flows with safe cross-platform fallbacks.
 ---
 
-One status object covers Android Play installs, sideloaded or debug builds, and iOS. You get the same shape back everywhere — update availability, version info, and what flows are allowed — so your app code stays the same regardless of where it's running.
+Capability-first means you ask the status object what can run before starting a flow. One status object covers Android Play installs, sideloaded or debug builds, and iOS — same shape everywhere, so your app code stays the same regardless of where it's running.
+
+## When To Use This
+
+- Your Android app is distributed through Google Play and you need Play Core immediate or flexible update flows from JavaScript.
+- For iOS, use the App Store page fallback to send users to the store.
 
 ## Support Matrix
 
-| Platform | Real in-app updates | Store page | Install listener |
+| Platform | Update flow | Store page | Install listener |
 |---|---|---|---|
 | Android installed from Google Play | Immediate + flexible | Yes | Yes |
-| Android sideload/debug install | Unsupported typed result | Play Store fallback | No |
-| iOS | Unsupported typed result | App Store fallback | Unsupported event |
+| Android sideload/debug install | Not available | Play Store fallback | No |
+| iOS | Not available | App Store fallback | Unsupported event only |
 
 ## Features
 
@@ -35,7 +40,7 @@ One status object covers Android Play installs, sideloaded or debug builds, and 
 
 1. Install the package and Nitro peer dependency.
 2. Call `getUpdateStatus()` before starting any update flow.
-3. Use helper predicates like `canStartImmediateUpdate(status)` instead of manually checking multiple fields.
+3. Use helper functions like `canStartImmediateUpdate(status)` before starting a flow.
 4. Use `openStorePage()` as the iOS and unsupported-install fallback.
 
 [Install the package](/docs/in-app-updates/install) or jump to the [Quick Start](/docs/in-app-updates/quickstart).

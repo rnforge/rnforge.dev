@@ -5,7 +5,7 @@ export const metadata: Metadata = {
     absolute: 'RNForge',
   },
   description:
-    'React Native packages for in-app updates, distributed via Google Play.',
+    'Native React Native packages with small APIs and clear platform behavior.',
 };
 
 export default function HomePage() {
@@ -15,14 +15,14 @@ export default function HomePage() {
         RNForge
       </h1>
       <p className="mt-4 max-w-xl text-lg text-fd-muted-foreground">
-        React Native packages for in-app updates and more.
+        Native React Native packages with small APIs, typed status results, and clear Android/iOS behavior.
       </p>
       <div className="mt-8 flex gap-4">
         <a
           href="/docs/rnforge"
           className="rounded-lg bg-fd-primary px-6 py-3 font-medium text-fd-primary-foreground"
         >
-          Documentation
+          Open Docs
         </a>
       </div>
     </main>

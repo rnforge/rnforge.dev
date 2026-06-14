@@ -1,9 +1,11 @@
 ---
 title: Overview
-description: Capability-first Android update flows with safe cross-platform fallbacks.
+description: Check update status, run Android Play update flows, and open the store when needed.
 ---
 
-Capability-first means you ask the status object what can run before starting a flow. One status object covers Android Play installs, sideloaded or debug builds, and iOS — same shape everywhere, so your app code stays the same regardless of where it's running.
+Capability-first means you check the status before you act.
+
+The same status shape works for Play Store installs, debug builds, sideloaded installs, and iOS. Android can start Play Core update flows when they are available. Other installs return normal unavailable states, so your app can fall back to the store page.
 
 ## When To Use This
 

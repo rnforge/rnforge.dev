@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     default: 'RNForge',
   },
   description:
-    'React Native packages for in-app updates, distributed via Google Play.',
+    'Native React Native packages with small APIs and clear platform behavior.',
   metadataBase: new URL('https://rnforge.dev'),
   openGraph: {
     siteName: 'RNForge',

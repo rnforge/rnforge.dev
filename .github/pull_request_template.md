@@ -11,6 +11,6 @@
 
 ## Checklist
 
-- [ ] Ran `bun run build` (passes)
-- [ ] Ran `bun run typecheck` (passes)
-- [ ] No analytics or external service config added
+- [ ] `bun run build` passes
+- [ ] `bun run typecheck` passes
+- [ ] `bun run lint:links` passes

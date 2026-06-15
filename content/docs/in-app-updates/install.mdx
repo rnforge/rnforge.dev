@@ -3,39 +3,37 @@ title: Installation
 description: Add the package, Nitro peer dependency, and native requirements.
 ---
 
-## Package
+## Install the package
 
 ```npm
 npm install @rnforge/react-native-in-app-updates react-native-nitro-modules
 ```
 
-## Rebuild Native Projects
+## Rebuild the app
 
-This package includes native code. After installing, rebuild your native projects.
+This package includes native code. After installing it, rebuild the native app for the platform you use.
 
-### React Native CLI
+### Android
 
-**iOS:**
+Rebuild the Android app from Android Studio or your React Native CLI workflow.
+
+### iOS
+
+Install pods, then rebuild the iOS app from Xcode or your React Native CLI workflow.
 
 ```bash
 cd ios && pod install
 ```
 
-Then rebuild from Xcode or your normal React Native command.
-
-**Android:**
-
-Rebuild from Android Studio or your normal React Native command.
-
 ### Expo
 
-Use a development build because this package includes native code.
+Expo Go cannot load this package because it includes native code. Use a development build.
 
 ```bash
 npx expo prebuild
 ```
 
-Then build and run a development app with your normal Expo workflow.
+Then build and run the development app with your Expo workflow.
 
 ## Requirements
 

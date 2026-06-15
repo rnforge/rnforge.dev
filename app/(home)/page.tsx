@@ -17,7 +17,7 @@ export default function HomePage() {
       <p className="mt-4 max-w-xl text-lg text-fd-muted-foreground">
         Native React Native packages with small APIs, typed status results, and clear Android/iOS behavior.
       </p>
-      <div className="mt-8 flex gap-4">
+      <div className="mt-8 flex flex-wrap justify-center gap-4">
         <a
           href="/docs/rnforge"
           className="rounded-lg bg-fd-primary px-6 py-3 font-medium text-fd-primary-foreground"

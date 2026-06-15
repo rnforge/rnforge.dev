@@ -3,14 +3,15 @@ title: Overview
 description: Check update status, run Android Play update flows, and open the store when needed.
 ---
 
-Capability-first means you check the status before you act.
+Call `getUpdateStatus()` first, then start only the flows the current install supports.
 
-The same status shape works for Play Store installs, debug builds, sideloaded installs, and iOS. Android can start Play Core update flows when they are available. Other installs return normal unavailable states, so your app can fall back to the store page.
+The same status shape works for Play Store installs, debug builds, sideloaded installs, and iOS. Android can start Play Core update flows when they are available. Other installs return unavailable states, so your app can fall back to the store page.
 
 ## When To Use This
 
 - Your Android app is distributed through Google Play and you need Play Core immediate or flexible update flows from JavaScript.
 - For iOS, use the App Store page fallback to send users to the store.
+- If you use Expo, this package needs a development build because Expo Go cannot load native modules.
 
 ## Support Matrix
 

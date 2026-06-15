@@ -3,7 +3,7 @@ title: App Integration
 description: Wire update checks into a React Native screen.
 ---
 
-This example shows a complete React component that loads update status, starts immediate or flexible update flows, and falls back to the store page when needed.
+This example shows one React component that loads update status, starts immediate or flexible update flows, shows flexible download progress, and falls back to the store page when needed.
 
 ## InAppUpdatePanel
 
@@ -35,7 +35,9 @@ export function InAppUpdatePanel() {
   const [status, setStatus] = useState<UpdateStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [progress, setProgress] = useState<number | null>(null);
   const subscriptionRef = useRef<InstallStateSubscription | null>(null);
+  const completingRef = useRef(false);
 
   const loadStatus = useCallback(async () => {
     setLoading(true);
@@ -87,16 +89,26 @@ export function InAppUpdatePanel() {
 
     subscriptionRef.current?.remove();
     subscriptionRef.current = null;
+    completingRef.current = false;
+    setProgress(null);
 
     subscriptionRef.current = addInstallStateListener((event) => {
+      if (event.installStatus === 'downloading') {
+        setProgress(event.progress ?? null);
+      }
+
       if (event.installStatus === 'downloaded') {
+        if (completingRef.current) return;
+        completingRef.current = true;
+        subscriptionRef.current?.remove();
+        subscriptionRef.current = null;
         void completeFlexibleUpdate()
           .then((next) => {
             setStatus(next);
-            subscriptionRef.current?.remove();
-            subscriptionRef.current = null;
+            setProgress(null);
           })
           .catch((error) => {
+            completingRef.current = false;
             if (error instanceof InAppUpdatesError) {
               setMessage(error.message);
             } else {
@@ -112,6 +124,8 @@ export function InAppUpdatePanel() {
     } catch (error) {
       subscriptionRef.current?.remove();
       subscriptionRef.current = null;
+      completingRef.current = false;
+      setProgress(null);
       if (error instanceof InAppUpdatesError) {
         setMessage(error.message);
       } else {
@@ -146,6 +160,7 @@ export function InAppUpdatePanel() {
       <Text>
         Update available: {status == null ? '...' : status.updateAvailable == null ? 'unknown' : status.updateAvailable ? 'yes' : 'no'}
       </Text>
+      {progress == null ? null : <Text>Download: {Math.round(progress * 100)}%</Text>}
       {status?.reason ? <Text>Reason: {status.reason}</Text> : null}
       {message ? <Text>{message}</Text> : null}
 
@@ -169,5 +184,6 @@ export function InAppUpdatePanel() {
 - Check status before starting a flow. Use helper functions like `canStartImmediateUpdate` and `canStartFlexibleUpdate` to guard each action.
 - Register the install-state listener before calling `startFlexibleUpdate()` so you receive events from the start.
 - Clean up the listener on unmount to avoid stale callbacks.
-- Complete a flexible update when the listener reports `event.installStatus === 'downloaded'`. If you refresh status separately and show a manual Complete update button, guard it with `canCompleteFlexibleUpdate(status)`.
+- Complete a flexible update when the listener reports `event.installStatus === 'downloaded'`. The example removes the listener and uses `completingRef` so duplicate events do not start duplicate completion calls.
+- If you refresh status separately and show a manual Complete update button, guard it with `canCompleteFlexibleUpdate(status)`.
 - Use the store page fallback when an in-app update flow is not available.

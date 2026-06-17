@@ -1,8 +1,9 @@
-import { source } from '@/lib/source';
-import { llms } from 'fumadocs-core/source';
+import { getSiteLLMIndex } from '@/lib/site-llm';
 
 export const revalidate = false;
 
 export function GET() {
-  return new Response(llms(source).index());
+  return new Response(getSiteLLMIndex(), {
+    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+  });
 }

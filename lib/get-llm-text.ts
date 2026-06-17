@@ -2,6 +2,24 @@ import { source } from '@/lib/source';
 import { renderPlaceholder } from 'fumadocs-core/mdx-plugins/remark-llms.runtime';
 import { readFileSync } from 'fs';
 
+function stripCodeBlockTabs(text: string): string {
+  let result = text;
+
+  result = result.replace(/<CodeBlockTabs[^>]*>[\s\S]*?<\/CodeBlockTabs>/g, (block) => {
+    const tabs: string[] = [];
+    const tabRegex = /<CodeBlockTab\s+value="([^"]+)">([\s\S]*?)<\/CodeBlockTab>/g;
+    let match;
+    while ((match = tabRegex.exec(block)) !== null) {
+      const label = match[1];
+      const content = match[2].trim();
+      tabs.push(`### ${label}\n\n${content}`);
+    }
+    return tabs.join('\n\n');
+  });
+
+  return result;
+}
+
 export async function getLLMText(page: (typeof source)['$inferPage']) {
   const processed = await page.data.getText('processed');
 
@@ -23,7 +41,9 @@ export async function getLLMText(page: (typeof source)['$inferPage']) {
     },
   });
 
-  return `# ${page.data.title} (${page.url})\n\n${rendered}`;
+  const cleaned = stripCodeBlockTabs(rendered);
+
+  return `# ${page.data.title} (${page.url})\n\n${cleaned}`;
 }
 
 function extractTypeInfo(filePath: string, typeName: string): string {
